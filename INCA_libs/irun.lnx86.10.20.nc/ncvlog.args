@@ -5,7 +5,12 @@
 -XLMODE
 ./INCA_libs/irun.lnx86.10.20.nc
 -RUNMODE
-CONT.v
+testfixture.v
+DPA.v
+-DEFINE
+tb2
+-DEFINE
+VCD
 -CDSLIB
 ./INCA_libs/irun.lnx86.10.20.nc/cdsrun.lib
 -HDLVAR

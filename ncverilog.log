@@ -1,26 +1,298 @@
 ncverilog: 10.20-s114: (c) Copyright 1995-2012 Cadence Design Systems, Inc.
-TOOL:	ncverilog	10.20-s114: Started on Nov 07, 2015 at 08:27:34 CST
+TOOL:	ncverilog	10.20-s114: Started on Nov 07, 2015 at 12:27:48 CST
 ncverilog
-	-c
-	CONT.v
-file: CONT.v
+	testfixture.v
+	DPA.v
+	+define+tb2+VCD
+	+access+r
+file: testfixture.v
+	module worklib.test:v
+		errors: 0, warnings: 0
+file: DPA.v
+	module worklib.p_dff:v
+		errors: 0, warnings: 0
 	module worklib.CONT:v
+		errors: 0, warnings: 0
+module p_dff(clk, reset, en, sel, d, q);
+           |
+ncvlog: *W,RECOME (p_dff.v,20|11): recompiling design unit worklib.p_dff:v.
+	First compiled from line 20 of p_dff.v.
+(`include file: p_dff.v line 20, `include file: DP.v line 19, file: DPA.v line 2)
+	module worklib.p_dff:v
+		errors: 0, warnings: 1
+	module worklib.DP:v
+		errors: 0, warnings: 0
+	module worklib.DPA:v
 		errors: 0, warnings: 0
 		Caching library 'worklib' ....... Done
 	Elaborating the design hierarchy:
+DP data_path(clk, reset, IM_Q, IM_D, 
+                                  |
+ncelab: *W,CUVMPW (./DPA.v,49|34): port sizes differ in port connection (24/30).
+         .d(si_w),
+               |
+ncelab: *W,CUVMPW (./DP.v,152|15): port sizes differ in port connection (24/20).
+         .d(si_w-1),
+                |
+ncelab: *W,CUVMPW (./DP.v,160|16): port sizes differ in port connection (32/2).
+         .d(si_w),
+               |
+ncelab: *W,CUVMPW (./DP.v,168|15): port sizes differ in port connection (24/20).
 	Building instance overlay tables: .................... Done
 	Generating native compiled code:
-		worklib.CONT:v <0x412d5d14>
-			streams:   0, words:     0
+		worklib.CONT:v <0x0e0fe5c3>
+			streams:  12, words:  9312
+		worklib.DP:v <0x60c04dba>
+			streams:  11, words:  3373
+		worklib.p_dff:v <0x07ddc96e>
+			streams:   4, words:  1328
+		worklib.p_dff:v <0x13f748ad>
+			streams:   4, words:  1360
+		worklib.p_dff:v <0x1bb6f47c>
+			streams:   4, words:  1364
+		worklib.p_dff:v <0x1ce92594>
+			streams:   4, words:  1360
+		worklib.p_dff:v <0x4841f43e>
+			streams:   4, words:  1482
+		worklib.p_dff:v <0x5d8dc147>
+			streams:   4, words:  1482
+		worklib.test:v <0x35f5b9b9>
+			streams:  14, words: 12705
 	Loading native compiled code:     .................... Done
 	Building instance specific data structures.
 	Design hierarchy summary:
-		             Instances  Unique
-		Modules:             1       1
-		Registers:          19      19
-		Scalar wires:        6       -
-		Vectored wires:      4       -
-		Always blocks:       2       2
-		Cont. assignments:   0      10
-	Writing initial simulation snapshot: worklib.CONT:v
-TOOL:	ncverilog	10.20-s114: Exiting on Nov 07, 2015 at 08:27:43 CST  (total: 00:00:09)
+		                   Instances  Unique
+		Modules:                  15       8
+		Primitives:              137       1
+		Timing outputs:           61       1
+		Registers:               210     203
+		Scalar wires:            233       -
+		Expanded wires:          175       8
+		Vectored wires:           25       -
+		Always blocks:            23      16
+		Initial blocks:            5       5
+		Cont. assignments:       164      33
+		Pseudo assignments:        6       6
+		Timing checks:           301      67
+		Simulation timescale:  100ps
+	Writing initial simulation snapshot: worklib.test:v
+Loading snapshot worklib.test:v .................... Done
+ncsim> source /usr/cad/cadence/INCISIV/cur/tools/inca/files/ncsimrc
+ncsim> run
+FB init addr = 000cd000
+=======  tick  0,  time=12:12:59  ========
+
+Warning!  Timing violation
+           $setuphold<hold>( posedge CLK &&& re_flag:2 US, posedge A[0]:2 US,  1.0 : 1 NS,  0.5 : 500 PS );
+            File: ./IMAGE_ROM.v, line = 367
+           Scope: test.IR
+            Time: 2 US
+
+
+Warning!  Timing violation
+           $setuphold<hold>( posedge CLK &&& re_flag:3 US, negedge A[0]:3 US,  1.0 : 1 NS,  0.5 : 500 PS );
+            File: ./IMAGE_ROM.v, line = 368
+           Scope: test.IR
+            Time: 3 US
+
+
+Warning!  Timing violation
+           $setuphold<hold>( posedge CLK &&& re_flag:3 US, posedge A[1]:3 US,  1.0 : 1 NS,  0.5 : 500 PS );
+            File: ./IMAGE_ROM.v, line = 369
+           Scope: test.IR
+            Time: 3 US
+
+
+Warning!  Timing violation
+           $setuphold<hold>( posedge CLK &&& re_flag:4 US, posedge A[0]:4 US,  1.0 : 1 NS,  0.5 : 500 PS );
+            File: ./IMAGE_ROM.v, line = 367
+           Scope: test.IR
+            Time: 4 US
+
+
+Warning!  Timing violation
+           $setuphold<hold>( posedge CLK &&& re_flag:5 US, negedge A[0]:5 US,  1.0 : 1 NS,  0.5 : 500 PS );
+            File: ./IMAGE_ROM.v, line = 368
+           Scope: test.IR
+            Time: 5 US
+
+
+Warning!  Timing violation
+           $setuphold<hold>( posedge CLK &&& re_flag:5 US, negedge A[1]:5 US,  1.0 : 1 NS,  0.5 : 500 PS );
+            File: ./IMAGE_ROM.v, line = 370
+           Scope: test.IR
+            Time: 5 US
+
+
+Warning!  Timing violation
+           $setuphold<hold>( posedge CLK &&& re_flag:5 US, posedge A[2]:5 US,  1.0 : 1 NS,  0.5 : 500 PS );
+            File: ./IMAGE_ROM.v, line = 371
+           Scope: test.IR
+            Time: 5 US
+
+Warning at                 6000 ns, IM_A=00004, IM_WEN=0 :
+    Forbid to write Image Memory except in the range of Frame Buffer
+
+Warning!  Timing violation
+           $setuphold<hold>( posedge CLK &&& re_flag:6 US, posedge A[0]:6 US,  1.0 : 1 NS,  0.5 : 500 PS );
+            File: ./IMAGE_ROM.v, line = 367
+           Scope: test.IR
+            Time: 6 US
+
+
+Warning!  Timing violation
+           $setuphold<hold>( posedge CLK &&& re_flag:6 US, posedge A[1]:6 US,  1.0 : 1 NS,  0.5 : 500 PS );
+            File: ./IMAGE_ROM.v, line = 369
+           Scope: test.IR
+            Time: 6 US
+
+
+Warning!  Timing violation
+           $setuphold<hold>( posedge CLK &&& re_flag:6 US, negedge A[2]:6 US,  1.0 : 1 NS,  0.5 : 500 PS );
+            File: ./IMAGE_ROM.v, line = 372
+           Scope: test.IR
+            Time: 6 US
+
+
+Warning!  Timing violation
+           $setuphold<hold>( posedge CLK &&& re_flag:6 US, posedge A[3]:6 US,  1.0 : 1 NS,  0.5 : 500 PS );
+            File: ./IMAGE_ROM.v, line = 373
+           Scope: test.IR
+            Time: 6 US
+
+
+Warning!  Timing violation
+           $setuphold<hold>( posedge CLK &&& re_flag:6 US, posedge A[4]:6 US,  1.0 : 1 NS,  0.5 : 500 PS );
+            File: ./IMAGE_ROM.v, line = 375
+           Scope: test.IR
+            Time: 6 US
+
+
+Warning!  Timing violation
+           $setuphold<hold>( posedge CLK &&& re_flag:6 US, posedge A[5]:6 US,  1.0 : 1 NS,  0.5 : 500 PS );
+            File: ./IMAGE_ROM.v, line = 377
+           Scope: test.IR
+            Time: 6 US
+
+
+Warning!  Timing violation
+           $setuphold<hold>( posedge CLK &&& re_flag:6 US, posedge A[6]:6 US,  1.0 : 1 NS,  0.5 : 500 PS );
+            File: ./IMAGE_ROM.v, line = 379
+           Scope: test.IR
+            Time: 6 US
+
+
+Warning!  Timing violation
+           $setuphold<hold>( posedge CLK &&& re_flag:6 US, posedge A[7]:6 US,  1.0 : 1 NS,  0.5 : 500 PS );
+            File: ./IMAGE_ROM.v, line = 381
+           Scope: test.IR
+            Time: 6 US
+
+
+Warning!  Timing violation
+           $setuphold<hold>( posedge CLK &&& re_flag:6 US, posedge A[8]:6 US,  1.0 : 1 NS,  0.5 : 500 PS );
+            File: ./IMAGE_ROM.v, line = 383
+           Scope: test.IR
+            Time: 6 US
+
+
+Warning!  Timing violation
+           $setuphold<hold>( posedge CLK &&& re_flag:6 US, posedge A[9]:6 US,  1.0 : 1 NS,  0.5 : 500 PS );
+            File: ./IMAGE_ROM.v, line = 385
+           Scope: test.IR
+            Time: 6 US
+
+
+Warning!  Timing violation
+           $setuphold<hold>( posedge CLK &&& re_flag:6 US, posedge A[10]:6 US,  1.0 : 1 NS,  0.5 : 500 PS );
+            File: ./IMAGE_ROM.v, line = 387
+           Scope: test.IR
+            Time: 6 US
+
+
+Warning!  Timing violation
+           $setuphold<hold>( posedge CLK &&& re_flag:6 US, posedge A[11]:6 US,  1.0 : 1 NS,  0.5 : 500 PS );
+            File: ./IMAGE_ROM.v, line = 389
+           Scope: test.IR
+            Time: 6 US
+
+
+Warning!  Timing violation
+           $setuphold<hold>( posedge CLK &&& re_flag:6 US, posedge A[12]:6 US,  1.0 : 1 NS,  0.5 : 500 PS );
+            File: ./IMAGE_ROM.v, line = 391
+           Scope: test.IR
+            Time: 6 US
+
+
+Warning!  Timing violation
+           $setuphold<hold>( posedge CLK &&& re_flag:6 US, posedge A[13]:6 US,  1.0 : 1 NS,  0.5 : 500 PS );
+            File: ./IMAGE_ROM.v, line = 393
+           Scope: test.IR
+            Time: 6 US
+
+
+Warning!  Timing violation
+           $setuphold<hold>( posedge CLK &&& re_flag:6 US, posedge A[14]:6 US,  1.0 : 1 NS,  0.5 : 500 PS );
+            File: ./IMAGE_ROM.v, line = 395
+           Scope: test.IR
+            Time: 6 US
+
+
+Warning!  Timing violation
+           $setuphold<hold>( posedge CLK &&& re_flag:6 US, posedge A[15]:6 US,  1.0 : 1 NS,  0.5 : 500 PS );
+            File: ./IMAGE_ROM.v, line = 397
+           Scope: test.IR
+            Time: 6 US
+
+
+Warning!  Timing violation
+           $setuphold<hold>( posedge CLK &&& re_flag:6 US, posedge A[16]:6 US,  1.0 : 1 NS,  0.5 : 500 PS );
+            File: ./IMAGE_ROM.v, line = 399
+           Scope: test.IR
+            Time: 6 US
+
+
+Warning!  Timing violation
+           $setuphold<hold>( posedge CLK &&& re_flag:6 US, posedge A[17]:6 US,  1.0 : 1 NS,  0.5 : 500 PS );
+            File: ./IMAGE_ROM.v, line = 401
+           Scope: test.IR
+            Time: 6 US
+
+
+Warning!  Timing violation
+           $setuphold<hold>( posedge CLK &&& re_flag:6 US, posedge A[18]:6 US,  1.0 : 1 NS,  0.5 : 500 PS );
+            File: ./IMAGE_ROM.v, line = 403
+           Scope: test.IR
+            Time: 6 US
+
+
+Warning!  Timing violation
+           $setuphold<hold>( posedge CLK &&& re_flag:6 US, posedge A[19]:6 US,  1.0 : 1 NS,  0.5 : 500 PS );
+            File: ./IMAGE_ROM.v, line = 405
+           Scope: test.IR
+            Time: 6 US
+
+
+Warning!  Timing violation
+           $setuphold<hold>( posedge CLK:6 US, negedge CEN:6 US,  1.0 : 1 NS,  0.5 : 500 PS );
+            File: ./FB.v, line = 546
+           Scope: test.FB
+            Time: 6 US
+
+ check at   0.400001 sec
+   -- image saved , filename =   tb2_image00.xpm
+
+   -- Verify FB fail,  first ERROR is at (  0,  0), Got xxxxxx, Expect 000001
+   -- Dump Frame Buffer, dumpfile =   tb2_image00.out
+
+
+                                             \|/    _--_ 
+      ************************************* <' \___/_--_ 
+      **  ERROR found , break simulation **  \_  _/--_   
+      *************************************    ][       
+
+
+Simulation complete via $finish(1) at time 400003 US + 1
+./FB.v:773         $finish;
+ncsim> exit
+TOOL:	ncverilog	10.20-s114: Exiting on Nov 07, 2015 at 12:30:01 CST  (total: 00:02:13)

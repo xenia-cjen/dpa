@@ -4,7 +4,7 @@
 // Filename      : CONT.v
 // Author        : r04099
 // Created On    : 2015-11-06 04:43
-// Last Modified : 2015-02-14 16:53
+// Last Modified : 2015-11-07 12:27
 // -------------------------------------------------------------------------------------------------
 // Svn Info:
 //   $Revision::                                                                                $:
@@ -16,12 +16,13 @@
 //
 //
 // -FHDR--------------------------------------------------------------------------------------------
+`include "p_dff.v"
 
 module CONT(clk, reset, im_a, im_wen_n, 
               curr_time, fb_addr, photo_num, curr_photo_addr, curr_photo_size, 
               en_si, en_init_time, en_fb_addr, en_photo_num, en_curr_photo_addr, 
               en_curr_photo_size, en_so, 
-              init_time_mux_sel, sftr_n, so_mux_sel); //TODO
+              init_time_mux_sel, sftr_n, so_mux_sel); 
 
 input                                   clk;
 input                                   reset;
@@ -91,8 +92,7 @@ reg     [19:0]                          write_cntr;
 reg     [19:0]                          next_write_cntr; 
 
 reg     [19:0]                          read_addr; 
-reg     [19:0]                          next_read_addr; 
-reg     [19:0]                          write_addr; 
+wire    [19:0]                          write_addr; 
 reg     [19:0]                          next_write_addr; 
 
 reg     [1:0]                           curr_photo; 
@@ -108,8 +108,8 @@ assign en_curr_photo_addr = (global_cntr==20'd4);
 assign en_curr_photo_size = (global_cntr==20'd5); 
 
 assign init_time_mux_sel = (state!=SETUP); 
-assign sftr_n            = 2'd0; //TODO
-assign so_mux_sel        = 2'd0; //TODO
+assign sftr_n            = 2'd0; //TODO:scale-support 
+assign so_mux_sel        = 2'd0; //TODO:time-lab->scale-support 
 
 reg     [9:0]                           row;
 always@* begin 
@@ -124,27 +124,6 @@ always@* begin
         next_state = (next_glb_cntr>=20'd3)?PHOTO_SET:SETUP;
     // ---------------------------------------------------------------------------------------------
 
-    // next rw-counter logic
-    if (next_state==PHOTO_SI || next_state==TIME_SI) begin 
-        if (state!=next_state) begin //counter init 
-            next_read_cntr  = 20'd0; 
-            next_write_cntr = 20'd0; 
-        end else begin 
-            if (im_wen_n) begin 
-                next_read_cntr  = read_cntr + 1; 
-                next_write_cntr = write_cntr; 
-            end else begin 
-                next_read_cntr  = read_cntr; 
-                next_write_cntr = write_cntr + 1; 
-            end 
-        end 
-    end else begin 
-        next_read_cntr  = read_cntr; 
-        next_write_cntr = write_cntr; 
-    end 
-
-    // ---------------------------------------------------------------------------------------------
-
     // row logic
     if (curr_photo_size==2'b01) // 128*128 size 
         row = 10'd128; 
@@ -154,50 +133,62 @@ always@* begin
         row = 10'd256; 
     // ---------------------------------------------------------------------------------------------
         
-    // read-address logic
-    if (next_state==PHOTO_SI) begin 
-        if (state==PHOTO_SET) // read_addr init 
-            next_read_addr = curr_photo_addr; 
-        else begin 
-            case (read_cntr%4) 
-            0: next_read_addr = read_addr + 1; 
-            1: next_read_addr = read_addr + row; 
-            2: next_read_addr = read_addr - 1; 
-            default: begin //3
-                next_read_addr = read_addr + 2;
-                end 
-            endcase 
+    // next rw-counter logic
+    if (next_state==PHOTO_SI || next_state==TIME_SI) begin 
+        if (state!=next_state) begin //counter init 
+            next_read_cntr  = 20'd0; 
+            next_write_cntr = 20'd0; 
+        end else begin 
+            if (im_wen_n==1'b1) begin 
+                //TODO:scale-support  
+                next_read_cntr =(write_cntr>=20'd65536)?read_cntr:read_cntr+1;
+                next_write_cntr=write_cntr; 
+            end else begin 
+                //TODO:scale-support 
+                next_read_cntr =read_cntr; 
+                next_write_cntr=(write_cntr>=20'd65536)?write_cntr:write_cntr+1;
+            end 
         end 
-    end else if (next_state==TIME_SI) begin 
-        //TODO
-    end else // next_state==SETUP||next_state==PHOTO_SET
-        next_read_addr = read_addr; 
+    end else begin 
+        next_read_cntr  = read_cntr; 
+        next_write_cntr = write_cntr; 
+    end 
+
+    // ---------------------------------------------------------------------------------------------
+
+    // read-address logic
+    if (state==PHOTO_SI) begin 
+        //TODO:scale-support 
+            read_addr=(read_cntr%2==1'b0)?write_addr:next_write_addr; 
+
+            //case (read_cntr%4) 
+            //0:  read_addr = 
+            //1:  read_addr = 
+            //2:  read_addr = 
+            //default: begin //3
+            //    read_addr = 
+            //    end 
+            //endcase 
+    end else // state==SETUP||state==PHOTO_SET||state==TIME_SI
+        read_addr = 20'd0; 
     // ---------------------------------------------------------------------------------------------
 
     // write-address logic
     if (next_state==PHOTO_SI) begin 
         if (state==PHOTO_SET) // write_addr init 
-            next_write_addr = fb_addr; 
+            next_write_addr = 20'd0; 
         else begin 
-            //TODO
-            case (write_cntr%4) 
-            0: next_write_addr = write_addr + 1; 
-            1: next_write_addr = write_addr + row; 
-            2: next_write_addr = write_addr - 1; 
-            default: begin //3
-                next_write_addr = write_addr + 2; 
-                end 
-            endcase 
+            //TODO:time-lab->scale-support  
+                next_write_addr = write_addr+1; 
         end 
-    end else if (next_state==TIME_SI) begin 
-        //TODO
+    //end else if (next_state==TIME_SI) begin //TODO:time-lab
     end else // next_state==SETUP||next_state==PHOTO_SET
         next_write_addr = write_addr; 
     // ---------------------------------------------------------------------------------------------
 
     // im-address logic
     if (state==PHOTO_SI || state==TIME_SI)  
-        im_a = (im_wen_n)?read_addr:write_addr; //TODO: verif.  
+        im_a = (im_wen_n==1'b1)?read_addr+curr_photo_addr:write_addr+fb_addr; 
     else if (state==PHOTO_SI)
         im_a = global_cntr+2*curr_photo; 
     else // state==SETUP 
@@ -206,11 +197,11 @@ always@* begin
 
     // im-write-enable logic
     if (next_state==PHOTO_SI) begin 
-        //TODO
-    end else if (next_state==TIME_SI) begin 
-        //TODO
+        //TODO:scale-support
+            im_wen_n=(work_cntr%4<2||write_cntr>=20'd65536)?1'b1:1'b0;
+    //end else if (next_state==TIME_SI) begin //TODO:time-lab
     end else // next_state==SETUP&&next_state==PHOTO_SET 
-        im_wen_n = 1'b1; 
+        im_wen_n   = 1'b1; 
 
     // ---------------------------------------------------------------------------------------------
 
@@ -224,8 +215,10 @@ always@* begin
     // ---------------------------------------------------------------------------------------------
 
     // serial-out register enable 
-    if (state==PHOTO_SI || state==TIME_SI) begin 
-        //TODO
+    if (state==PHOTO_SI) begin 
+        //TODO:scale-support
+            en_so  = 1'b1; //TODO:power-save 
+    //end else if (state==TIME_SI) begin //TODO:time-lab
     end else // state==SETUP || PHOTO_SET
         en_so      = 1'b0; 
     // ---------------------------------------------------------------------------------------------
@@ -250,9 +243,6 @@ always@(posedge clk or posedge reset) begin
         read_cntr                    <= 20'd0; 
         write_cntr                   <= 20'd0; 
 
-        read_addr                    <= 20'd0; 
-        write_addr                   <= 20'd0; 
-
         curr_photo                   <= 2'd0; 
     end else begin 
         state                        <= next_state; 
@@ -263,11 +253,16 @@ always@(posedge clk or posedge reset) begin
         read_cntr                    <= next_read_cntr; 
         write_cntr                   <= next_write_cntr; 
 
-        read_addr                    <= next_read_addr; 
-        write_addr                   <= next_write_addr; 
-
         curr_photo                   <= next_photo; 
     end 
 end 
+
+p_dff #(.WORD(20), .NSEL(5))
+      write_addr_reg(.clk(clk), 
+         .reset(reset), 
+         .en(im_wen_n==1'b0||(next_state==PHOTO_SI&&state==PHOTO_SET)), 
+         .sel(5'd31), 
+         .d(next_write_addr),
+         .q(write_addr)); 
 
 endmodule // CONT

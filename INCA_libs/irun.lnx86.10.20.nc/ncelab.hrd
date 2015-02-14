@@ -2,7 +2,5 @@
 // File created by:  ncverilog
 // Do not modify this file
 //
-testfixture.v
-DPA.v
-+define+tb2+VCD
-+access+r
+-ACCESS
++r

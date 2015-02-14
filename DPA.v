@@ -1,3 +1,6 @@
+`include "CONT.v"
+`include "DP.v"
+
 module DPA (clk,reset,IM_A, IM_Q,IM_D,IM_WEN,CR_A,CR_Q);
 input clk;
 input reset;
@@ -11,4 +14,41 @@ output  [23:0]  IM_D;
 
 output  [8:0]   CR_A;
 
+// -------------------------------------------------------------------------------------------------
+// signal between control logic & data-path 
+// -------------------------------------------------------------------------------------------------
+
+wire            [23:0]                  curr_time; 
+wire            [19:0]                  fb_addr; 
+wire            [1:0]                   photo_num;  
+
+wire            [19:0]                  curr_photo_addr; 
+wire            [1:0]                   curr_photo_size; 
+
+wire                                    en_si; 
+wire                                    en_so; 
+
+wire                                    en_init_time; 
+wire                                    en_fb_addr; 
+wire                                    en_photo_num; 
+wire                                    en_curr_photo_addr; 
+wire                                    en_curr_photo_size; 
+
+
+wire                                    init_time_mux_sel; 
+wire            [1:0]                   sftr_n; 
+wire            [1:0]                   so_mux_sel;  
+// -------------------------------------------------------------------------------------------------
+
+CONT ctrl_logic(clk, reset, IM_A, IM_WEN, 
+              curr_time, fb_addr, photo_num, curr_photo_addr, curr_photo_size, 
+              en_si, en_init_time, en_fb_addr, en_photo_num, en_curr_photo_addr, 
+              en_curr_photo_size, en_so, 
+              init_time_mux_sel, sftr_n, so_mux_sel); 
+
+DP data_path(clk, reset, IM_Q, IM_D, 
+            en_si, en_init_time, en_fb_addr, en_photo_num, en_curr_photo_addr, 
+            en_curr_photo_size, en_so, 
+            init_time_mux_sel, sftr_n, so_mux_sel, 
+            curr_time, fb_addr, photo_num, curr_photo_addr, curr_photo_size);
 endmodule // PDA
