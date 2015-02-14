@@ -5,7 +5,7 @@
 -XLMODE
 ./INCA_libs/irun.lnx86.10.20.nc
 -RUNMODE
-DP.v
+CONT.v
 -CDSLIB
 ./INCA_libs/irun.lnx86.10.20.nc/cdsrun.lib
 -HDLVAR

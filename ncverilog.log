@@ -1,44 +1,26 @@
 ncverilog: 10.20-s114: (c) Copyright 1995-2012 Cadence Design Systems, Inc.
-TOOL:	ncverilog	10.20-s114: Started on Nov 07, 2015 at 01:13:30 CST
+TOOL:	ncverilog	10.20-s114: Started on Nov 07, 2015 at 08:27:34 CST
 ncverilog
-	DP.v
-file: DP.v
-	module worklib.DP:v
+	-c
+	CONT.v
+file: CONT.v
+	module worklib.CONT:v
 		errors: 0, warnings: 0
 		Caching library 'worklib' ....... Done
 	Elaborating the design hierarchy:
-         .d(si_w),
-               |
-ncelab: *W,CUVMPW (./DP.v,152|15): port sizes differ in port connection (24/20).
-         .d(si_w-1),
-                |
-ncelab: *W,CUVMPW (./DP.v,160|16): port sizes differ in port connection (32/2).
-         .d(si_w),
-               |
-ncelab: *W,CUVMPW (./DP.v,168|15): port sizes differ in port connection (24/20).
 	Building instance overlay tables: .................... Done
 	Generating native compiled code:
-		worklib.DP:v <0x5582d2a0>
-			streams:   0, words:     0
-		worklib.p_dff:v <0x13ec668b>
-			streams:   0, words:     0
-		worklib.p_dff:v <0x3a15c8ef>
-			streams:   0, words:     0
-		worklib.p_dff:v <0x479cdfc9>
-			streams:   0, words:     0
-		worklib.p_dff:v <0x64f72dc5>
-			streams:   0, words:     0
-		worklib.p_dff:v <0x7be78b5a>
+		worklib.CONT:v <0x412d5d14>
 			streams:   0, words:     0
 	Loading native compiled code:     .................... Done
 	Building instance specific data structures.
 	Design hierarchy summary:
-		              Instances  Unique
-		Modules:              8       2
-		Registers:            9       3
-		Scalar wires:       122       -
-		Vectored wires:      10       -
-		Always blocks:        8       2
-		Cont. assignments:    0       9
-	Writing initial simulation snapshot: worklib.DP:v
-TOOL:	ncverilog	10.20-s114: Exiting on Nov 07, 2015 at 01:13:58 CST  (total: 00:00:28)
+		             Instances  Unique
+		Modules:             1       1
+		Registers:          19      19
+		Scalar wires:        6       -
+		Vectored wires:      4       -
+		Always blocks:       2       2
+		Cont. assignments:   0      10
+	Writing initial simulation snapshot: worklib.CONT:v
+TOOL:	ncverilog	10.20-s114: Exiting on Nov 07, 2015 at 08:27:43 CST  (total: 00:00:09)
