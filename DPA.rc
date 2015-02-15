@@ -2,7 +2,7 @@ Magic 271485
 Revision 2012.04
 
 ; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
-viewPort -4 1 1280 751 182 65
+viewPort -4 23 1280 751 182 65
 
 ; File list:
 ; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
@@ -16,8 +16,8 @@ signalSpacing 3
 
 ; windowTimeUnit is used for zoom, cursor & marker
 ; waveform viewport range
-zoom 3999912492.060896 4000030000.000000
-cursor 4000030000.000000
+zoom 56981.669837 209935.603246
+cursor 110000.000000
 marker 0.000000
 
 ; user define markers
@@ -25,7 +25,7 @@ marker 0.000000
 ; visible top row signal index
 top 0
 ; marker line index
-markerPos 15
+markerPos 21
 
 ; event list
 ; addEvent event_name event_expression
@@ -63,6 +63,12 @@ addSignal -h 15 /BLANK
 addSignal -h 15 /test/DPA/ctrl_logic/en_si
 addSignal -h 15 -holdScope next_en_si
 addSignal -h 15 /BLANK
+addSignal -h 15 -UNSIGNED -HEX /test/DPA/ctrl_logic/read_cntr[19:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope read_addr[19:0]
+addSignal -h 15 /BLANK
+addSignal -h 15 -UNSIGNED -HEX /test/DPA/ctrl_logic/write_cntr[19:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope write_addr[19:0]
+addSignal -h 15 /BLANK
 addSignal -h 15 -UNSIGNED -HEX /test/DPA/ctrl_logic/curr_time[23:0]
 addSignal -h 15 -UNSIGNED -HEX -holdScope fb_addr[19:0]
 addSignal -h 15 -UNSIGNED -HEX -holdScope photo_num[1:0]
@@ -90,6 +96,7 @@ SCOPE_LIST_BEGIN
 "/test/DPA/ctrl_logic"
 "/test/DPA/data_path"
 "/test/DPA/ctrl_logic/write_addr_reg"
+"/test/DPA/ctrl_logic/read_cntr_reg"
 SCOPE_LIST_END
 
 GETSIGNALFORM_SCOPE_HIERARCHY_END

@@ -1,9 +1,0 @@
-//
-// File created by:  ncverilog
-// Do not modify this file
-//
--notimingcheck
-testfixture.v
-DPA.v
-+access+r
-+define+tb1+VCD

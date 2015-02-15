@@ -1,0 +1,44 @@
+Novas Release 2012.04 (Linux x86_64/64bit) 04/11/2012
+Copyright (C) 2009 - 2012 by SpringSoft, Inc.
+All Rights Reserved.
+www.springsoft.com
+
+This computer program constitutes or contains trade secrets and confidential
+information of SpringSoft Inc. or its licensors. This computer program is
+protected by copyright law and international treaties.
+
+
+Total number of converted HDL2CELL cells=0 (normal modules=0)
+Inferring module CONT, file CONT.v, line 21~279 (Verilog)
+
+
+Verdi design analysis: total error(s) 0, total warning(s) 0.
+Inferring module DPA, file /home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/DPA.v, line 3~53 (Verilog)
+
+
+Verdi design analysis: total error(s) 0, total warning(s) 0.
+Inferring module test, file /home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/testfixture.v, line 94~266 (Verilog)
+
+Warning!(BA-38) "/home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/testfixture.v", Line: 198~198
+'always' statement is inferred as a black box because of no sensitivity list.
+
+Module test, File /home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/testfixture.v, Line 94~266, Total error(s) 0, warning(s) 2
+
+
+Verdi design analysis: total error(s) 0, total warning(s) 2.
+---- Any errors/warnings, please refer to file /home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/VerdiLog/novas.log -----------------------
+[Symbol Library from default setting]
+  library Path = /usr/spring_soft/verdi/cur/share/symlib/64
+  library Name = default_u
+[Symbol Library from manual setting]
+  There are 0 library path(s) and 0 library name(s):
+
+
+TS: trace fanin for test.DPA.ctrl_logic.next_read_cntr#90000 => cpu = 0.00
+!Info: mismatch found on test.DPA.ctrl_logic.next_read_cntr[19:0] at time 90000
+TS: trace fanin for test.DPA.ctrl_logic.read_cntr#90000 => cpu = 0.00
+TS: trace fanin for test.DPA.ctrl_logic.next_read_cntr#80000 => cpu = 0.00
+TS: trace fanin for test.DPA.ctrl_logic.read_cntr#80000 => cpu = 0.00
+TS: trace fanin for test.DPA.ctrl_logic.next_read_cntr#70000 => cpu = 0.00
+TS: trace fanin for test.DPA.ctrl_logic.read_cntr#70000 => cpu = 0.01
+TS: trace fanin for test.DPA.ctrl_logic.next_read_cntr#60000 => cpu = 0.00

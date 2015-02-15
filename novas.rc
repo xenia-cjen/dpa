@@ -255,23 +255,23 @@ Comment-FontOverride = FALSE
 [FSM_Dlg-Print]
 Orientation = Landscape
 [FileBrowser]
-ImportDesign = /home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/DPA.v,/home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/testfixture.v,/home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/FB.v,/home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/DP.v,/home/raid5_3/user04/r0409\
-9/Documents/cvsd/hw/hw3/p_dff.v,
 nWaveOpenFsdbDirHistory = /home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/DPA.vcd,/home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3,
+ImportDesign = /home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/p_dff.v,/home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/DP.v,/home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/FB.v,/home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/testfixture.v,/home/raid5_3/user04/r04\
+099/Documents/cvsd/hw/hw3/DPA.v,
 nWaveRestoreRCDirHistory = /home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/DPA.rc,/home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3,
 [Form]
 version = 2012.04
-wave/activeFile.fm = 100,122,530,200
 vguSignalManager.fm = 100,122,608,537
-text/textViewTop.fm = 406,160,445,487
-tfv.fm = 0,22,900,600
-wave/waveTopWin.fm = 0,23,1280,751
-hb/hbTopWin.fm = 7,66,804,500
-hb/importDsg.fm = 90,66,780,730
 wave/openWFile.fm = 325,110,823,696
-wave/restoreSig.fm = 100,540,723,532
-wave/saveSig.fm = 100,188,723,532
-wave/getSignal.fm = 100,188,856,562
+wave/activeFile.fm = 100,144,530,200
+tfv.fm = 0,44,900,600
+text/textViewTop.fm = 811,172,445,487
+wave/waveTopWin.fm = -7,39,1280,751
+hb/hbTopWin.fm = 7,88,804,500
+hb/importDsg.fm = 118,22,780,730
+wave/restoreSig.fm = 134,332,723,532
+wave/getSignal.fm = 100,100,856,562
+wave/saveSig.fm = 100,254,723,532
 [General]
 TclAutoSource = 
 version = 2012.04
@@ -287,9 +287,9 @@ designTreeFont = -adobe-helvetica-medium-r-normal--14-*-75-75-*-*-iso8859-*
 import_filter_vhdl = *.vhd; *.vhdl; *.f
 simulation_file_type = *.fsdb;*.fsdb.gz;*.ff;*.dump
 PrefetchViewableAnnot = TRUE
-windowLayout = 3 44 804 500 238 297 804 148
+windowLayout = 3 66 804 500 238 297 804 148
 import_filter_verilog = *.v; *.vc; *.f
-import_default_language = Verilog
+import_default_language = Verilog-2001
 import_from = source
 [ImportLiberty]
 SearchPriority = .lib++
@@ -515,7 +515,7 @@ hdlSynopsysHead = ID_GREEN2
 hdlSynopsysComment = ID_GREEN2
 font = SMALL12
 [Text.1]
-viewport = 3 44 804 500 45
+viewport = 3 66 804 500 45
 [TextPrinter]
 Orientation = Landscape
 Indicator = FALSE
@@ -614,7 +614,7 @@ waveform_vertical_scroll_bar = TRUE
 scope_to_save_with_macro
 open_file_dir
 open_rc_file_dir
-viewPort = -8 0 1280 751 182 65
+viewPort = -4 23 1280 751 182 65
 signalSpacing = 3
 digitalSignalHeight = 15
 analogSignalHeight = 98
