@@ -8,7 +8,7 @@
 testfixture.v
 DPA.v
 -DEFINE
-tb2
+tb1
 -DEFINE
 VCD
 -CDSLIB

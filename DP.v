@@ -4,7 +4,7 @@
 // Filename      : DP.v
 // Author        : r04099
 // Created On    : 2015-11-06 22:58
-// Last Modified : 2015-11-07 01:14
+// Last Modified : 2015-02-14 21:08
 // -------------------------------------------------------------------------------------------------
 // Svn Info:
 //   $Revision::                                                                                $:
@@ -133,7 +133,7 @@ p_dff #(.WORD(30), .NSEL(5))
          .reset(reset), 
          .en(en_so), 
          .sel(sel_all), 
-         .d(),
+         .d(so_mux),
          .q(im_d)); 
 
 p_dff #(.WORD(24), .NSEL(5))

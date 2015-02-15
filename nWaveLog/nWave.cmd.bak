@@ -1,0 +1,19 @@
+wvResizeWindow -win $_nWave1 41 0 1280 751
+wvRestoreSignal -win $_nWave1 \
+           "/home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/DPA.rc" \
+           -overWriteAutoAlias on
+wvConvertFile -win $_nWave1 -o \
+           "/home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/DPA.vcd.fsdb" \
+           "/home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/DPA.vcd"
+wvSelectSignal -win $_nWave1 {( "G1" 10 )} 
+wvSelectSignal -win $_nWave1 {( "G1" 11 )} 
+wvSelectSignal -win $_nWave1 {( "G1" 7 )} 
+wvSetCursor -win $_nWave1 105547.932246 -snap {("G1" 10)}
+wvSetCursor -win $_nWave1 99968.920300 -snap {("G1" 10)}
+wvSelectSignal -win $_nWave1 {( "G1" 10 )} 
+wvSetCursor -win $_nWave1 82999.425632 -snap {("G1" 11)}
+wvSetCursor -win $_nWave1 119786.035649 -snap {("G1" 4)}
+wvDisplayGridCount -win $_nWave1 -off
+wvGetSignalClose -win $_nWave1
+wvReloadFile -win $_nWave1
+wvExit

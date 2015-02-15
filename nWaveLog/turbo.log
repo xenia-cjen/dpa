@@ -1,0 +1,6 @@
+Command Line: /usr/spring_soft/verdi/cur/platform/LINUXAMD64/bin/Novas
+uname(Linux cad23 2.6.18-308.el5 #1 SMP Tue Feb 21 20:06:06 EST 2012 x86_64)
+Disabled AskUser3 Message (Response 0): /home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/DPA.vcd.fsdb exists, overwrite it ?
+Disabled AskUser3 Message (Response 0): /home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/DPA.vcd.fsdb exists, overwrite it ?
+\! Could not get the fileId of /home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/DPA.vcd
+au time 2017.633189 12.084163 10.084467 delta 20054016 46370816 total 22545400 48862200

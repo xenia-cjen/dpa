@@ -2,13 +2,13 @@
 // File created by:  ncverilog
 // Do not modify this file
 //
-+define+tb2+VCD
 +access+r
++define+tb1+VCD
 -MESSAGES
 +EMGRLOG
 ncverilog.log
 -XLSTIME
-1446870468
+1446909472
 -XLKEEP
 -XLMODE
 ./INCA_libs/irun.lnx86.10.20.nc
@@ -22,4 +22,4 @@ ncverilog
 -XLVERSION
 "TOOL:	ncverilog	10.20-s114"
 -XLNAME
-./INCA_libs/irun.lnx86.10.20.nc/cad23_31763
+./INCA_libs/irun.lnx86.10.20.nc/cad29_25920

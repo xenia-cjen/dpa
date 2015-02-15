@@ -2,7 +2,8 @@
 // File created by:  ncverilog
 // Do not modify this file
 //
+-notimingcheck
 testfixture.v
 DPA.v
-+define+tb2+VCD
 +access+r
++define+tb1+VCD
