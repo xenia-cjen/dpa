@@ -19,4 +19,4 @@ clean :
 	@rm -rf INCA_libs nWaveLog VerdiLog vfastLog 
 
 synclean : 
-	@rm -rf *-verilog.syn *.mr *.pvl default.svf
+	@rm -rf *-verilog.syn *.mr *.pvl default.svf command.log 
