@@ -37,21 +37,22 @@ wire                                    en_curr_photo_size;
 wire                                    init_time_mux_sel; 
 wire            [1:0]                   sftr_n; 
 wire            [1:0]                   so_mux_sel;  
+wire            [3:0]                   expand_sel;
 
 wire            [29:0]                  im_d_w; 
 
 assign          IM_D = {im_d_w[27:20], im_d_w[17:10], im_d_w[7:0]}; 
 // -------------------------------------------------------------------------------------------------
 
-CONT ctrl_logic(clk, reset, IM_A, IM_WEN, 
+CONT ctrl_logic(clk, reset, IM_A, IM_WEN, CR_A, 
               curr_time, fb_addr, photo_num, curr_photo_addr, curr_photo_size, 
               en_si, en_init_time, en_fb_addr, en_photo_num, en_curr_photo_addr, 
               en_curr_photo_size, en_so, 
-              init_time_mux_sel, sftr_n, so_mux_sel); 
+              si_sel, init_time_mux_sel, sftr_n, so_mux_sel, expand_sel); 
 
-DP data_path(clk, reset, IM_Q, im_d_w, 
+DP data_path(clk, reset, IM_Q, CR_Q, im_d_w, 
             en_si, en_init_time, en_fb_addr, en_photo_num, en_curr_photo_addr, 
             en_curr_photo_size, en_so, 
-            init_time_mux_sel, sftr_n, so_mux_sel, 
+            si_sel, init_time_mux_sel, sftr_n, so_mux_sel, expand_sel, 
             curr_time, fb_addr, photo_num, curr_photo_addr, curr_photo_size);
 endmodule // PDA

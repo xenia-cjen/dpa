@@ -188,3 +188,6 @@ wvSetPosition -win $_nWave1 {("G1" 13)}
 wvGetSignalClose -win $_nWave1
 wvSaveSignal -win $_nWave1 \
            "/home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/DPA.rc"
+wvSaveSignal -win $_nWave1 \
+           "/home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/DPA.rc"
+wvExit

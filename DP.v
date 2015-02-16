@@ -4,7 +4,7 @@
 // Filename      : DP.v
 // Author        : r04099
 // Created On    : 2015-11-06 22:58
-// Last Modified : 2015-02-15 22:03
+// Last Modified : 2015-02-16 20:59
 // -------------------------------------------------------------------------------------------------
 // Svn Info:
 //   $Revision::                                                                                $:
@@ -18,16 +18,17 @@
 // -FHDR--------------------------------------------------------------------------------------------
 `include "p_dff.v"
 
-module DP(clk, reset, im_q, im_d, 
+module DP(clk, reset, im_q, cr_q, im_d, 
             en_si, en_init_time, en_fb_addr, en_photo_num, en_curr_photo_addr, 
             en_curr_photo_size, en_so, 
-            init_time_mux_sel, sftr_n, so_mux_sel, 
+            si_sel, init_time_mux_sel, sftr_n, so_mux_sel, expand_sel, 
             curr_time, fb_addr, photo_num, curr_photo_addr, curr_photo_size);
 
 input                                   clk;
 input                                   reset;
 
 input           [23:0]                  im_q; 
+input           [12:0]                  cr_q; 
 output          [29:0]                  im_d; 
 
 // -------------------------------------------------------------------------------------------------
@@ -37,10 +38,12 @@ output          [29:0]                  im_d;
 input en_si, en_init_time, en_fb_addr, en_photo_num, en_curr_photo_addr, 
         en_curr_photo_size, en_so;  
 
+input si_sel; 
 input init_time_mux_sel; 
 
 input             [1:0]                   sftr_n; 
 input             [1:0]                   so_mux_sel; 
+input             [3:0]                   expand_sel;
 
 //TODO: would later enable for power saving  
 //input           [4:0]                   sel_si;  
@@ -72,6 +75,7 @@ localparam                              LARGE  = 2'b11; // 512*512 size
 
 wire            [4:0]                   sel_all = 5'b11111;  
 
+wire            [23:0]                  si_mux; 
 wire            [23:0]                  si_w; 
 wire            [23:0]                  init_time_mux; 
 
@@ -85,8 +89,12 @@ wire            [9:0]                   sftr_b; //TODO: might reduced to 8-bit
 wire            [9:0]                   sftr_g; 
 wire            [9:0]                   sftr_r; 
 
+wire            [23:0]                  expand; 
+
 reg             [29:0]                  so_mux; 
 reg             [1:0]                   curr_photo_size_sel; 
+
+assign si_mux           = (si_sel==1'b0)?im_q:cr_q;
 
 assign init_time_mux    = (init_time_mux_sel==1'b1)?curr_time+1:si_w;
 
@@ -100,16 +108,22 @@ assign sftr_b           = addr_b >> sftr_n;
 assign sftr_g           = addr_g >> sftr_n; 
 assign sftr_r           = addr_r >> sftr_n; 
 
+assign expand           = {24{si_w[expand_sel]}}; 
+
 always@* begin 
     // so_mux logic 
     case (so_mux_sel) 
     ADD:   so_mux={addr_r, addr_g, addr_b}; 
     SHIFT: so_mux={sftr_r, sftr_g, sftr_b};  
+    EXPAND: begin 
+        so_mux[9:0]={2'b00, expand[7:0]};  
+        so_mux[19:10]={2'b00, expand[15:8]};  
+        so_mux[29:20]={2'b00, expand[23:16]};  
+    end 
     default: begin //BYPASS, EXPAND
         so_mux[9:0]={2'b00, si_w[7:0]};  
         so_mux[19:10]={2'b00, si_w[15:8]};  
         so_mux[29:20]={2'b00, si_w[23:16]};  
-        //TODO
     end 
     endcase 
     // ---------------------------------------------------------------------------------------------
@@ -129,7 +143,7 @@ p_dff #(.WORD(24), .NSEL(5))
          .reset(reset), 
          .en(en_si), 
          .sel(sel_all), //TODO
-         .d(im_q),
+         .d(si_mux),
          .q(si_w)); 
 
 p_dff #(.WORD(30), .NSEL(5))

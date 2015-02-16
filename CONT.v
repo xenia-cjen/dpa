@@ -4,7 +4,7 @@
 // Filename      : CONT.v
 // Author        : r04099
 // Created On    : 2015-11-06 04:43
-// Last Modified : 2015-02-16 13:23
+// Last Modified : 2015-02-16 21:33
 // -------------------------------------------------------------------------------------------------
 // Svn Info:
 //   $Revision::                                                                                $:
@@ -18,17 +18,18 @@
 // -FHDR--------------------------------------------------------------------------------------------
 `include "DP.v"
 
-module CONT(clk, reset, im_a, im_wen_n, 
+module CONT(clk, reset, im_a, im_wen_n, cr_a, 
               curr_time, fb_addr, photo_num, curr_photo_addr, curr_photo_size, 
               en_si, en_init_time, en_fb_addr, en_photo_num, en_curr_photo_addr, 
               en_curr_photo_size, en_so, 
-              init_time_mux_sel, sftr_n, so_mux_sel); 
+              si_sel, init_time_mux_sel, sftr_n, so_mux_sel, expand_sel); 
 
 input                                   clk;
 input                                   reset;
 
 output reg      [19:0]                  im_a;
 output reg                              im_wen_n; 
+output reg      [8:0]                   cr_a; 
 
 
 // -------------------------------------------------------------------------------------------------
@@ -59,9 +60,11 @@ output                                  en_curr_photo_size;
 
 //output reg                            en_shift; 
 
+output reg                              si_sel; 
 output                                  init_time_mux_sel; 
 output          [1:0]                   sftr_n; 
 output reg      [1:0]                   so_mux_sel;  
+output reg      [3:0]                   expand_sel; 
 // -------------------------------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------------------------------
@@ -268,6 +271,16 @@ always@* begin
         next_en_si      = (next_glb_cntr>=4);
     else // state==SETUP
         next_en_si      = (next_glb_cntr>=1); 
+    // ---------------------------------------------------------------------------------------------
+
+    // serial-out mux. selector 
+    if (state==PHOTO_SI) begin 
+        si_sel = 1'b0; //TODO:time-lab
+    end else if (state==TIME_SI) 
+        si_sel = 1'b1; 
+    else  
+        si_sel = 1'b0; 
+            
     // ---------------------------------------------------------------------------------------------
 
     // serial-out mux. selector 
