@@ -1,37 +1,17 @@
-wvResizeWindow -win $_nWave1 54 236 960 332
+wvResizeWindow -win $_nWave1 -4 23 1280 751
 wvRestoreSignal -win $_nWave1 \
            "/home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/DPA.rc" \
            -overWriteAutoAlias on
 wvConvertFile -win $_nWave1 -o \
            "/home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/DPA.vcd.fsdb" \
            "/home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/DPA.vcd"
-wvResizeWindow -win $_nWave1 54 258 960 332
-wvResizeWindow -win $_nWave1 -11 17 1280 751
-wvSetCursor -win $_nWave1 86717.669452 -snap {("G1" 18)}
-wvSearchPrev -win $_nWave1
-wvSearchPrev -win $_nWave1
-wvSearchPrev -win $_nWave1
-wvSearchPrev -win $_nWave1
-wvSearchPrev -win $_nWave1
-wvSearchPrev -win $_nWave1
-wvSearchPrev -win $_nWave1
-wvSetCursor -win $_nWave1 70749.036741
-wvSetCursor -win $_nWave1 100401.826996 -snap {("G1" 2)}
-wvSetCursor -win $_nWave1 79675.131767 -snap {("G1" 18)}
-wvSetCursor -win $_nWave1 69538.718771 -snap {("G1" 17)}
-wvSetCursor -win $_nWave1 69992.588010 -snap {("G1" 18)}
-wvSetCursor -win $_nWave1 69992.588010 -snap {("G1" 18)}
-wvSelectSignal -win $_nWave1 {( "G1" 18 )} 
-wvCut -win $_nWave1
-wvSetPosition -win $_nWave1 {("G1" 19)}
-wvSetPosition -win $_nWave1 {("G1" 18)}
-wvSetCursor -win $_nWave1 89357.675524 -snap {("G1" 17)}
-wvSetCursor -win $_nWave1 99796.668011 -snap {("G1" 11)}
+wvSelectSignal -win $_nWave1 {( "G1" 12 )} 
+wvSetPosition -win $_nWave1 {("G1" 12)}
 wvGetSignalOpen -win $_nWave1
-wvGetSignalSetScope -win $_nWave1 "/test/DPA/ctrl_logic/read_cntr_reg"
 wvGetSignalSetScope -win $_nWave1 "/test/DPA/ctrl_logic"
-wvSetPosition -win $_nWave1 {("G1" 23)}
-wvSetPosition -win $_nWave1 {("G1" 23)}
+wvGetSignalSetScope -win $_nWave1 "/test/DPA/data_path"
+wvSetPosition -win $_nWave1 {("G1" 14)}
+wvSetPosition -win $_nWave1 {("G1" 14)}
 wvAddSignal -win $_nWave1 -clear
 wvAddSignal -win $_nWave1 -group {"G1" \
 {/test/DPA/ctrl_logic/reset} \
@@ -47,6 +27,8 @@ wvAddSignal -win $_nWave1 -group {"G1" \
 {/test/DPA/ctrl_logic/im_wen_n} \
 {/test/DPA/data_path/im_q\[23:0\]} \
 {/BLANK} \
+{/test/DPA/data_path/im_d\[29:0\]} \
+{/BLANK} \
 {/test/DPA/ctrl_logic/en_si} \
 {/test/DPA/ctrl_logic/next_en_si} \
 {/BLANK} \
@@ -54,9 +36,7 @@ wvAddSignal -win $_nWave1 -group {"G1" \
 {/test/DPA/ctrl_logic/read_addr\[19:0\]} \
 {/BLANK} \
 {/test/DPA/ctrl_logic/write_cntr\[19:0\]} \
-{/test/DPA/ctrl_logic/next_write_cntr\[19:0\]} \
 {/test/DPA/ctrl_logic/write_addr\[19:0\]} \
-{/test/DPA/ctrl_logic/next_write_addr\[19:0\]} \
 {/BLANK} \
 {/test/DPA/ctrl_logic/curr_time\[23:0\]} \
 {/test/DPA/ctrl_logic/fb_addr\[19:0\]} \
@@ -68,13 +48,59 @@ wvAddSignal -win $_nWave1 -group {"G1" \
 }
 wvAddSignal -win $_nWave1 -group {"G2" \
 }
-wvSelectSignal -win $_nWave1 {( "G1" 23 )} 
-wvSetPosition -win $_nWave1 {("G1" 23)}
+wvSelectSignal -win $_nWave1 {( "G1" 14 )} 
+wvSetPosition -win $_nWave1 {("G1" 14)}
 wvGetSignalClose -win $_nWave1
-wvSelectSignal -win $_nWave1 {( "G1" 25 )} 
+wvGetSignalOpen -win $_nWave1
+wvGetSignalSetScope -win $_nWave1 "/test"
+wvGetSignalSetScope -win $_nWave1 "/test/DPA"
+wvGetSignalSetScope -win $_nWave1 "/test/DPA/ctrl_logic"
+wvGetSignalSetScope -win $_nWave1 "/test/DPA/data_path"
+wvGetSignalSetScope -win $_nWave1 "/test/DPA/data_path"
+wvGetSignalSetScope -win $_nWave1 "/test/DPA"
+wvSetPosition -win $_nWave1 {("G1" 15)}
+wvSetPosition -win $_nWave1 {("G1" 15)}
+wvAddSignal -win $_nWave1 -clear
+wvAddSignal -win $_nWave1 -group {"G1" \
+{/test/DPA/ctrl_logic/reset} \
+{/test/DPA/ctrl_logic/clk} \
+{/BLANK} \
+{/test/DPA/ctrl_logic/global_cntr\[19:0\]} \
+{/test/DPA/ctrl_logic/work_cntr\[19:0\]} \
+{/BLANK} \
+{/test/DPA/ctrl_logic/next_state\[1:0\]} \
+{/test/DPA/ctrl_logic/state\[1:0\]} \
+{/BLANK} \
+{/test/DPA/ctrl_logic/im_a\[19:0\]} \
+{/test/DPA/ctrl_logic/im_wen_n} \
+{/test/DPA/data_path/im_q\[23:0\]} \
+{/BLANK} \
+{/test/DPA/data_path/im_d\[29:0\]} \
+{/test/DPA/IM_D\[23:0\]} \
+{/BLANK} \
+{/test/DPA/ctrl_logic/en_si} \
+{/test/DPA/ctrl_logic/next_en_si} \
+{/BLANK} \
+{/test/DPA/ctrl_logic/read_cntr\[19:0\]} \
+{/test/DPA/ctrl_logic/read_addr\[19:0\]} \
+{/BLANK} \
+{/test/DPA/ctrl_logic/write_cntr\[19:0\]} \
+{/test/DPA/ctrl_logic/write_addr\[19:0\]} \
+{/BLANK} \
+{/test/DPA/ctrl_logic/curr_time\[23:0\]} \
+{/test/DPA/ctrl_logic/fb_addr\[19:0\]} \
+{/test/DPA/ctrl_logic/photo_num\[1:0\]} \
+{/BLANK} \
+{/test/DPA/ctrl_logic/curr_photo_addr\[19:0\]} \
+{/test/DPA/ctrl_logic/curr_photo_size\[1:0\]} \
+{/BLANK} \
+}
+wvAddSignal -win $_nWave1 -group {"G2" \
+}
+wvSelectSignal -win $_nWave1 {( "G1" 15 )} 
+wvSetPosition -win $_nWave1 {("G1" 15)}
+wvGetSignalClose -win $_nWave1
+wvSetCursor -win $_nWave1 100099.247504 -snap {("G1" 15)}
 wvSaveSignal -win $_nWave1 \
            "/home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/DPA.rc"
-wvDisplayGridCount -win $_nWave1 -off
-wvGetSignalClose -win $_nWave1
-wvReloadFile -win $_nWave1
 wvExit

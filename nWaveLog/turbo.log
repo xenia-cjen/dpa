@@ -1,3 +1,5 @@
 Command Line: /usr/spring_soft/verdi/cur/platform/LINUXAMD64/bin/Novas
 uname(Linux cad23 2.6.18-308.el5 #1 SMP Tue Feb 21 20:06:06 EST 2012 x86_64)
-au time 2186.100274 12.002175 11.907190 delta 21692416 48013312 total 24183800 50504696
+\! Could not get the fileId of /home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/DPA.vcd
+Disabled AskUser3 Message (Response 0): /home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/DPA.vcd.fsdb exists, overwrite it ?
+Disabled AskUser3 Message (Response 0): /home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/DPA.vcd.fsdb exists, overwrite it ?

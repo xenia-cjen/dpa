@@ -4,7 +4,7 @@
 // Filename      : CONT.v
 // Author        : r04099
 // Created On    : 2015-11-06 04:43
-// Last Modified : 2015-02-15 19:14
+// Last Modified : 2015-02-16 09:57
 // -------------------------------------------------------------------------------------------------
 // Svn Info:
 //   $Revision::                                                                                $:
@@ -125,10 +125,10 @@ always@* begin
         next_state = (next_glb_cntr>=20'd5)?PHOTO_SET:SETUP;
     // ---------------------------------------------------------------------------------------------
 
-    // row logic
-    if (curr_photo_size==2'b01) // 128*128 size 
+    // row-logic
+    if (curr_photo_size==2'b01) // 128*128-size 
         row = 10'd128; 
-    else if (curr_photo_size==2'b11) //512*512 size 
+    else if (curr_photo_size==2'b11) // 512*512-size 
         row = 10'd512; 
     else 
         row = 10'd256; 
@@ -156,16 +156,26 @@ always@* begin
     // read-address logic
     if (state==PHOTO_SI) begin 
         //TODO:scale-support 
+        if (curr_photo_size==2'b11) begin // 512*512-size
+            if (read_cntr%8<4) begin 
+                case (read_cntr%4) 
+                0:  read_addr={write_addr[19:7], 1'b0, write_addr[6:0], 1'b0}; 
+                1:  read_addr={write_addr[19:7], 1'b0, write_addr[6:0], 1'b1}; 
+                2:  read_addr={write_addr[19:7], 1'b1, write_addr[6:0], 1'b1}; 
+                default:  
+                    read_addr={write_addr[19:7], 1'b1, write_addr[6:0], 1'b0}; 
+                endcase 
+            end else begin 
+                case (read_cntr%4) 
+                0:  read_addr={next_write_addr[19:7], 1'b0, next_write_addr[6:0], 1'b0}; 
+                1:  read_addr={next_write_addr[19:7], 1'b0, next_write_addr[6:0], 1'b1}; 
+                2:  read_addr={next_write_addr[19:7], 1'b1, next_write_addr[6:0], 1'b1}; 
+                default:  
+                    read_addr={next_write_addr[19:7], 1'b1, next_write_addr[6:0], 1'b0}; 
+                endcase 
+            end 
+        end else // normal-size    
             read_addr=(read_cntr%2==1'b0)?write_addr:next_write_addr; 
-
-            //case (read_cntr%4) 
-            //0:  read_addr = 
-            //1:  read_addr = 
-            //2:  read_addr = 
-            //default: begin //3
-            //    read_addr = 
-            //    end 
-            //endcase 
     end else // state==SETUP||state==PHOTO_SET||state==TIME_SI
         read_addr = 20'd0; 
     // ---------------------------------------------------------------------------------------------
@@ -176,7 +186,9 @@ always@* begin
             next_write_addr = 20'd0; 
         else begin 
             //TODO:time-lab->scale-support  
-                next_write_addr = write_addr+1; 
+            //if (curr_photo_size==2'b11) begin // 512*512-size
+            //end else 
+                next_write_addr=write_addr+1; 
         end 
     //end else if (next_state==TIME_SI) begin //TODO:time-lab
     end else // next_state==SETUP||next_state==PHOTO_SET
@@ -186,11 +198,24 @@ always@* begin
     // im-address logic
     if (state==PHOTO_SI) begin  
         //TODO:scale-support
+        if (curr_photo_size==2'b11) begin // 512*512-size
+            if (work_cntr>20'd6) begin 
+                if ((work_cntr-20'd7)%6<5) 
+                    im_a = read_addr+curr_photo_addr; 
+                else 
+                    im_a = write_addr+fb_addr; 
+            end else begin 
+                if (work_cntr<20'd6) 
+                    im_a = read_addr+curr_photo_addr; 
+                else 
+                    im_a = write_addr+fb_addr; 
+            end 
+        end else begin // normal-size
             if (work_cntr%5<3) 
                 im_a = read_addr+curr_photo_addr; 
             else
                 im_a = write_addr+fb_addr; 
-        //im_a = (im_wen_n==1'b0)?(write_addr+fb_addr):(read_addr+curr_photo_addr); 
+        end 
     //end else if (state==TIME_SI) begin //TODO:time-lab
     end else if (state==PHOTO_SET)
         im_a = global_cntr+2*curr_photo; 
@@ -201,21 +226,41 @@ always@* begin
     // im-write-enable logic
     if (state==PHOTO_SI) begin 
         //TODO:scale-support
+        if (curr_photo_size==2'b11) begin // 512*512-size
+            if (work_cntr>20'd6) begin 
+                if ((work_cntr-20'd7)%6<5) 
+                    im_wen_n = 1'b1; 
+                else 
+                    im_wen_n = (write_cntr>=20'd65536); 
+            end else begin 
+                if (work_cntr<20'd6) 
+                    im_wen_n = 1'b1; 
+                else 
+                    im_wen_n = (write_cntr>=20'd65536); 
+            end 
+        end else begin // normal-size
             if (work_cntr%5<3) 
                 im_wen_n = 1'b1; 
             else
                 im_wen_n = (write_cntr>=20'd65536); 
+        end 
     //end else if (state==TIME_SI) begin //TODO:time-lab
     end else // state==SETUP&&state==PHOTO_SET 
         im_wen_n   = 1'b1; 
 
     // ---------------------------------------------------------------------------------------------
 
-    // serial-in register enable 
+    // next serial-in register enable 
     if (next_state==PHOTO_SI) begin 
         //TODO:scale-support
         if (state!=PHOTO_SET) begin 
-            next_en_si  = (((work_cntr+1)%5<3)&&((work_cntr+1)%5>0)); //TODO:verif. 
+            if (curr_photo_size==2'b11) begin // 512*512-size
+                if (work_cntr>20'd5)  
+                    next_en_si  = (((work_cntr-20'd6)%6<5)&&((work_cntr-20'd6)%6>0)); 
+                else 
+                    next_en_si  = (work_cntr<20'd5); 
+            end else // normal-size
+                next_en_si  = (((work_cntr+1)%5<3)&&((work_cntr+1)%5>0)); 
         end else 
             next_en_si  = 1'b0; 
     //end else if (state==TIME_SI) begin //TODO:time-lab

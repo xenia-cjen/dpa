@@ -269,9 +269,9 @@ text/textViewTop.fm = 811,172,445,487
 wave/waveTopWin.fm = -7,39,1280,751
 hb/hbTopWin.fm = 7,88,804,500
 hb/importDsg.fm = 118,22,780,730
-wave/restoreSig.fm = 100,628,723,532
-wave/saveSig.fm = 100,232,723,532
-wave/getSignal.fm = 171,94,856,562
+wave/restoreSig.fm = 134,354,723,532
+wave/getSignal.fm = 100,144,856,562
+wave/saveSig.fm = 100,276,723,532
 [General]
 TclAutoSource = 
 version = 2012.04
@@ -614,7 +614,7 @@ waveform_vertical_scroll_bar = TRUE
 scope_to_save_with_macro
 open_file_dir
 open_rc_file_dir
-viewPort = -4 1 1280 751 182 65
+viewPort = -4 112 1280 751 182 65
 signalSpacing = 3
 digitalSignalHeight = 15
 analogSignalHeight = 98

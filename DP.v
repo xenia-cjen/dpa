@@ -4,7 +4,7 @@
 // Filename      : DP.v
 // Author        : r04099
 // Created On    : 2015-11-06 22:58
-// Last Modified : 2015-02-14 21:08
+// Last Modified : 2015-02-15 22:03
 // -------------------------------------------------------------------------------------------------
 // Svn Info:
 //   $Revision::                                                                                $:
@@ -75,6 +75,8 @@ wire            [4:0]                   sel_all = 5'b11111;
 wire            [23:0]                  si_w; 
 wire            [23:0]                  init_time_mux; 
 
+wire            [1:0]                   photo_num_w; 
+
 wire            [9:0]                   addr_b; 
 wire            [9:0]                   addr_g; 
 wire            [9:0]                   addr_r; 
@@ -87,6 +89,8 @@ reg             [29:0]                  so_mux;
 reg             [1:0]                   curr_photo_size_sel; 
 
 assign init_time_mux    = (init_time_mux_sel==1'b1)?curr_time+1:si_w;
+
+assign photo_num_w      = si_w-1; 
 
 assign addr_b           = si_w[7:0]+im_d[9:0]; 
 assign addr_g           = si_w[15:8]+im_d[19:10]; 
@@ -149,7 +153,7 @@ p_dff #(.WORD(20), .NSEL(5))
          .reset(reset), 
          .en(en_fb_addr), 
          .sel(sel_all), 
-         .d(si_w),
+         .d(si_w[19:0]),
          .q(fb_addr)); 
 
 p_dff #(.WORD(2), .NSEL(5))
@@ -157,7 +161,7 @@ p_dff #(.WORD(2), .NSEL(5))
          .reset(reset), 
          .en(en_photo_num), 
          .sel(sel_all), 
-         .d(si_w-1),
+         .d(photo_num_w),
          .q(photo_num)); 
 
 p_dff #(.WORD(20), .NSEL(5))
@@ -165,7 +169,7 @@ p_dff #(.WORD(20), .NSEL(5))
          .reset(reset), 
          .en(en_curr_photo_addr), 
          .sel(sel_all), 
-         .d(si_w),
+         .d(si_w[19:0]),
          .q(curr_photo_addr)); 
 
 p_dff #(.WORD(2), .NSEL(5))
