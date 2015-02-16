@@ -4,7 +4,7 @@
 // Filename      : CONT.v
 // Author        : r04099
 // Created On    : 2015-11-06 04:43
-// Last Modified : 2015-02-17 00:21
+// Last Modified : 2015-02-17 03:09
 // -------------------------------------------------------------------------------------------------
 // Svn Info:
 //   $Revision::                                                                                $:
@@ -90,7 +90,8 @@ localparam      MAX_CR_WRITE_CNTR     = 20'd2496;
 
 reg     [19:0]                          global_cntr; 
 wire    [19:0]                          next_glb_cntr; 
-wire    [19:0]                          work_cntr; // cntr for not during setup 
+reg     [19:0]                          work_cntr; // cntr within state 
+wire    [19:0]                          next_work_cntr; 
 
 reg                                     next_en_si;
 
@@ -110,7 +111,7 @@ reg     [8:0]                           next_cr_read_cntr;
 reg     [1:0]                           curr_photo; 
 reg     [1:0]                           next_photo; 
 
-assign work_cntr     = global_cntr - 20'd6; 
+assign next_work_cntr= (next_state==state)?work_cntr+1:20'd0; 
 assign next_glb_cntr = (global_cntr!=20'd99_9999)?global_cntr+1'd1:20'd0; 
 
 assign en_init_time  = (global_cntr==20'd2); 
@@ -210,7 +211,7 @@ always@* begin
     // ---------------------------------------------------------------------------------------------
 
     // im-address logic
-    if (state==PHOTO_SI) begin  
+    if (state==PHOTO_SI || state==NEXT_PHOTO_SI) begin  
         //TODO:scale-support
         if (curr_photo_size==2'b11) begin // 512*512-size
             if (work_cntr>20'd6) begin 
@@ -238,7 +239,7 @@ always@* begin
     // ---------------------------------------------------------------------------------------------
 
     // im-write-enable logic
-    if (state==PHOTO_SI) begin 
+    if (state==PHOTO_SI || state==NEXT_PHOTO_SI) begin 
         //TODO:scale-support
         if (curr_photo_size==2'b11) begin // 512*512-size
             if (work_cntr>20'd6) begin 
@@ -265,9 +266,10 @@ always@* begin
     // ---------------------------------------------------------------------------------------------
 
     // next serial-in register enable 
-    if (next_state==PHOTO_SI) begin 
+    if (next_state==PHOTO_SI || next_state==NEXT_PHOTO_SI) begin 
         //TODO:scale-support
-        if (state!=PHOTO_SET) begin 
+        //TODO:may change to next_work_cntr
+        if (next_state==state) begin 
             if (curr_photo_size==2'b11) begin // 512*512-size
                 if (work_cntr>20'd5)  
                     next_en_si  = (((work_cntr-20'd6)%6<5)&&((work_cntr-20'd6)%6>0)); 
@@ -285,7 +287,7 @@ always@* begin
     // ---------------------------------------------------------------------------------------------
 
     // serial-out mux. selector 
-    if (state==PHOTO_SI) begin 
+    if (state==PHOTO_SI || state==NEXT_PHOTO_SI) begin 
         if (curr_photo_size==2'b11) begin // 512*512-size
             if (work_cntr>20'd6) begin 
                 if (((work_cntr-20'd7)%6<4)&&((work_cntr-20'd7)%6>1)) 
@@ -304,15 +306,15 @@ always@* begin
             end 
         end else // normal-size
             so_mux_sel = 2'b00; // BYPASS
-    //end else if (state==TIME_SI) begin //TODO:time-lab
+    end else if (state==TIME_SI || state==NEXT_TIME_SI) begin
+        so_mux_sel = 2'b10; //EXPAND
     end else 
         so_mux_sel = 2'b00; 
     // ---------------------------------------------------------------------------------------------
 
     // serial-out register enable 
-    if (state==PHOTO_SI) begin 
-        //TODO:scale-support
-            en_so  = 1'b1; //TODO:power-save 
+    if (state==PHOTO_SI || state==NEXT_PHOTO_SI) begin 
+        en_so      = 1'b1;
     //end else if (state==TIME_SI) begin //TODO:time-lab
     end else // state==SETUP || PHOTO_SET
         en_so      = 1'b0; 
@@ -332,11 +334,13 @@ always@(posedge clk or posedge reset) begin
     if (reset==1'b1) begin 
         state                        <= SETUP; 
         global_cntr                  <= 20'd0; 
+        work_cntr                    <= 20'd0; 
         en_si                        <= 1'b1; 
         curr_photo                   <= 2'd0; 
     end else begin 
         state                        <= next_state; 
         global_cntr                  <= next_glb_cntr; 
+        work_cntr                    <= next_work_cntr; 
         en_si                        <= next_en_si; 
         curr_photo                   <= next_photo; 
     end 
