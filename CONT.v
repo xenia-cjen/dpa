@@ -4,7 +4,7 @@
 // Filename      : CONT.v
 // Author        : r04099
 // Created On    : 2015-11-06 04:43
-// Last Modified : 2015-02-16 11:56
+// Last Modified : 2015-02-16 13:23
 // -------------------------------------------------------------------------------------------------
 // Svn Info:
 //   $Revision::                                                                                $:
@@ -61,7 +61,7 @@ output                                  en_curr_photo_size;
 
 output                                  init_time_mux_sel; 
 output          [1:0]                   sftr_n; 
-output          [1:0]                   so_mux_sel;  
+output reg      [1:0]                   so_mux_sel;  
 // -------------------------------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------------------------------
@@ -109,8 +109,7 @@ assign en_curr_photo_addr = (global_cntr==20'd5);
 assign en_curr_photo_size = (global_cntr==20'd6); 
 
 assign init_time_mux_sel = (state!=SETUP); 
-assign sftr_n            = 2'd0; //TODO:scale-support 
-assign so_mux_sel        = 2'd0; //TODO:time-lab->scale-support 
+assign sftr_n            = 2'd2; //TODO:scale-support 
 
 reg     [9:0]                           row;
 always@* begin 
@@ -158,20 +157,20 @@ always@* begin
         //TODO:scale-support 
         if (curr_photo_size==2'b11) begin // 512*512-size
             case (read_cntr%4) 
-            1:  read_addr={write_addr[19:7], 1'b0, write_addr[6:0], 1'b1}; 
-            2:  read_addr={write_addr[19:7], 1'b1, write_addr[6:0], 1'b1}; 
-            3:  read_addr={write_addr[19:7], 1'b1, write_addr[6:0], 1'b0}; 
+            1:  read_addr={write_addr[19:8], 1'b0, write_addr[7:0], 1'b1}; 
+            2:  read_addr={write_addr[19:8], 1'b1, write_addr[7:0], 1'b1}; 
+            3:  read_addr={write_addr[19:8], 1'b1, write_addr[7:0], 1'b0}; 
             default: begin  
                 if (work_cntr>20'd6) begin 
                     if ((work_cntr-20'd7)%6<3) 
-                        read_addr={write_addr[19:7], 1'b0, write_addr[6:0], 1'b0}; 
+                        read_addr={write_addr[19:8], 1'b0, write_addr[7:0], 1'b0}; 
                     else 
-                        read_addr={next_write_addr[19:7], 1'b0, next_write_addr[6:0], 1'b0}; 
+                        read_addr={next_write_addr[19:8], 1'b0, next_write_addr[7:0], 1'b0}; 
                 end else begin 
                     if (work_cntr<20'd4) 
-                        read_addr={write_addr[19:7], 1'b0, write_addr[6:0], 1'b0}; 
+                        read_addr={write_addr[19:8], 1'b0, write_addr[7:0], 1'b0}; 
                     else 
-                        read_addr={next_write_addr[19:7], 1'b0, next_write_addr[6:0], 1'b0}; 
+                        read_addr={next_write_addr[19:8], 1'b0, next_write_addr[7:0], 1'b0}; 
                 end 
             end 
             endcase 
@@ -271,6 +270,31 @@ always@* begin
         next_en_si      = (next_glb_cntr>=1); 
     // ---------------------------------------------------------------------------------------------
 
+    // serial-out mux. selector 
+    if (state==PHOTO_SI) begin 
+        if (curr_photo_size==2'b11) begin // 512*512-size
+            if (work_cntr>20'd6) begin 
+                if (((work_cntr-20'd7)%6<4)&&((work_cntr-20'd7)%6>1)) 
+                    so_mux_sel = 2'b01; // ADD 
+                else if ((work_cntr-20'd7)%6==4) 
+                    so_mux_sel = 2'b11; // SHIFT
+                else 
+                    so_mux_sel = 2'b00; // BYPASS
+            end else begin 
+                if ((work_cntr<20'd5)&&(work_cntr>20'd2)) 
+                    so_mux_sel = 2'b01; // ADD 
+                else if (work_cntr==20'd5)
+                    so_mux_sel = 2'b11; // SHIFT
+                else 
+                    so_mux_sel = 2'b00; // BYPASS
+            end 
+        end else // normal-size
+            so_mux_sel = 2'b00; // BYPASS
+    //end else if (state==TIME_SI) begin //TODO:time-lab
+    end else 
+        so_mux_sel = 2'b00; 
+    // ---------------------------------------------------------------------------------------------
+
     // serial-out register enable 
     if (state==PHOTO_SI) begin 
         //TODO:scale-support
@@ -297,7 +321,6 @@ always@(posedge clk or posedge reset) begin
         global_cntr                  <= 20'd0; 
 
         en_si                        <= 1'b1; 
-
 
         curr_photo                   <= 2'd0; 
     end else begin 

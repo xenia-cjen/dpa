@@ -77,3 +77,114 @@ wvConvertFile -win $_nWave1 -o \
            "/home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/DPA.vcd.fsdb" \
            "/home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/DPA.vcd"
 wvReloadFile -win $_nWave1
+wvSetCursor -win $_nWave1 116759.979305 -snap {("G2" 0)}
+wvDisplayGridCount -win $_nWave1 -off
+wvGetSignalClose -win $_nWave1
+wvConvertFile -win $_nWave1 -o \
+           "/home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/DPA.vcd.fsdb" \
+           "/home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/DPA.vcd"
+wvReloadFile -win $_nWave1
+wvSelectSignal -win $_nWave1 {( "G1" 12 )} 
+wvSetPosition -win $_nWave1 {("G1" 12)}
+wvGetSignalOpen -win $_nWave1
+wvGetSignalSetScope -win $_nWave1 "/test/DPA/ctrl_logic"
+wvSetPosition -win $_nWave1 {("G1" 14)}
+wvSetPosition -win $_nWave1 {("G1" 14)}
+wvAddSignal -win $_nWave1 -clear
+wvAddSignal -win $_nWave1 -group {"G1" \
+{/test/DPA/ctrl_logic/reset} \
+{/test/DPA/ctrl_logic/clk} \
+{/BLANK} \
+{/test/DPA/ctrl_logic/global_cntr\[19:0\]} \
+{/test/DPA/ctrl_logic/work_cntr\[19:0\]} \
+{/BLANK} \
+{/test/DPA/ctrl_logic/next_state\[1:0\]} \
+{/test/DPA/ctrl_logic/state\[1:0\]} \
+{/BLANK} \
+{/test/DPA/ctrl_logic/im_a\[19:0\]} \
+{/test/DPA/ctrl_logic/im_wen_n} \
+{/test/DPA/data_path/im_q\[23:0\]} \
+{/BLANK} \
+{/test/DPA/ctrl_logic/so_mux_sel\[1:0\]} \
+{/BLANK} \
+{/test/DPA/data_path/im_d\[29:0\]} \
+{/test/DPA/IM_D\[23:0\]} \
+{/BLANK} \
+{/test/DPA/ctrl_logic/en_si} \
+{/test/DPA/ctrl_logic/next_en_si} \
+{/BLANK} \
+{/test/DPA/ctrl_logic/read_cntr\[19:0\]} \
+{/test/DPA/ctrl_logic/read_addr\[19:0\]} \
+{/BLANK} \
+{/test/DPA/ctrl_logic/write_cntr\[19:0\]} \
+{/test/DPA/ctrl_logic/write_addr\[19:0\]} \
+{/BLANK} \
+{/test/DPA/ctrl_logic/curr_time\[23:0\]} \
+{/test/DPA/ctrl_logic/fb_addr\[19:0\]} \
+{/test/DPA/ctrl_logic/photo_num\[1:0\]} \
+{/BLANK} \
+{/test/DPA/ctrl_logic/curr_photo_addr\[19:0\]} \
+{/test/DPA/ctrl_logic/curr_photo_size\[1:0\]} \
+{/BLANK} \
+}
+wvAddSignal -win $_nWave1 -group {"G2" \
+}
+wvSelectSignal -win $_nWave1 {( "G1" 14 )} 
+wvSetPosition -win $_nWave1 {("G1" 14)}
+wvGetSignalClose -win $_nWave1
+wvSelectSignal -win $_nWave1 {( "G1" 12 )} 
+wvSetPosition -win $_nWave1 {("G1" 12)}
+wvGetSignalOpen -win $_nWave1
+wvGetSignalSetScope -win $_nWave1 "/test"
+wvGetSignalSetScope -win $_nWave1 "/test/DPA"
+wvGetSignalSetScope -win $_nWave1 "/test/DPA/ctrl_logic"
+wvGetSignalSetScope -win $_nWave1 "/test/DPA/data_path"
+wvGetSignalSetScope -win $_nWave1 "/test/DPA/ctrl_logic"
+wvGetSignalSetScope -win $_nWave1 "/test/DPA/data_path"
+wvSetPosition -win $_nWave1 {("G1" 13)}
+wvSetPosition -win $_nWave1 {("G1" 13)}
+wvAddSignal -win $_nWave1 -clear
+wvAddSignal -win $_nWave1 -group {"G1" \
+{/test/DPA/ctrl_logic/reset} \
+{/test/DPA/ctrl_logic/clk} \
+{/BLANK} \
+{/test/DPA/ctrl_logic/global_cntr\[19:0\]} \
+{/test/DPA/ctrl_logic/work_cntr\[19:0\]} \
+{/BLANK} \
+{/test/DPA/ctrl_logic/next_state\[1:0\]} \
+{/test/DPA/ctrl_logic/state\[1:0\]} \
+{/BLANK} \
+{/test/DPA/ctrl_logic/im_a\[19:0\]} \
+{/test/DPA/ctrl_logic/im_wen_n} \
+{/test/DPA/data_path/im_q\[23:0\]} \
+{/test/DPA/data_path/si_w\[23:0\]} \
+{/BLANK} \
+{/test/DPA/ctrl_logic/so_mux_sel\[1:0\]} \
+{/BLANK} \
+{/test/DPA/data_path/im_d\[29:0\]} \
+{/test/DPA/IM_D\[23:0\]} \
+{/BLANK} \
+{/test/DPA/ctrl_logic/en_si} \
+{/test/DPA/ctrl_logic/next_en_si} \
+{/BLANK} \
+{/test/DPA/ctrl_logic/read_cntr\[19:0\]} \
+{/test/DPA/ctrl_logic/read_addr\[19:0\]} \
+{/BLANK} \
+{/test/DPA/ctrl_logic/write_cntr\[19:0\]} \
+{/test/DPA/ctrl_logic/write_addr\[19:0\]} \
+{/BLANK} \
+{/test/DPA/ctrl_logic/curr_time\[23:0\]} \
+{/test/DPA/ctrl_logic/fb_addr\[19:0\]} \
+{/test/DPA/ctrl_logic/photo_num\[1:0\]} \
+{/BLANK} \
+{/test/DPA/ctrl_logic/curr_photo_addr\[19:0\]} \
+{/test/DPA/ctrl_logic/curr_photo_size\[1:0\]} \
+{/BLANK} \
+}
+wvAddSignal -win $_nWave1 -group {"G2" \
+}
+wvSelectSignal -win $_nWave1 {( "G1" 13 )} 
+wvSetPosition -win $_nWave1 {("G1" 13)}
+wvGetSignalClose -win $_nWave1
+wvSaveSignal -win $_nWave1 \
+           "/home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/DPA.rc"
