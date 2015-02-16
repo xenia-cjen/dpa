@@ -1,0 +1,10 @@
+# Verdi files #
+###############
+*.vcd*
+
+# User-defined #
+################
+.trash 
+.trash/*
+
+

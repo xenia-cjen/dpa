@@ -4,7 +4,7 @@
 // Filename      : CONT.v
 // Author        : r04099
 // Created On    : 2015-11-06 04:43
-// Last Modified : 2015-02-16 09:57
+// Last Modified : 2015-02-16 11:56
 // -------------------------------------------------------------------------------------------------
 // Svn Info:
 //   $Revision::                                                                                $:
@@ -157,23 +157,24 @@ always@* begin
     if (state==PHOTO_SI) begin 
         //TODO:scale-support 
         if (curr_photo_size==2'b11) begin // 512*512-size
-            if (read_cntr%8<4) begin 
-                case (read_cntr%4) 
-                0:  read_addr={write_addr[19:7], 1'b0, write_addr[6:0], 1'b0}; 
-                1:  read_addr={write_addr[19:7], 1'b0, write_addr[6:0], 1'b1}; 
-                2:  read_addr={write_addr[19:7], 1'b1, write_addr[6:0], 1'b1}; 
-                default:  
-                    read_addr={write_addr[19:7], 1'b1, write_addr[6:0], 1'b0}; 
-                endcase 
-            end else begin 
-                case (read_cntr%4) 
-                0:  read_addr={next_write_addr[19:7], 1'b0, next_write_addr[6:0], 1'b0}; 
-                1:  read_addr={next_write_addr[19:7], 1'b0, next_write_addr[6:0], 1'b1}; 
-                2:  read_addr={next_write_addr[19:7], 1'b1, next_write_addr[6:0], 1'b1}; 
-                default:  
-                    read_addr={next_write_addr[19:7], 1'b1, next_write_addr[6:0], 1'b0}; 
-                endcase 
+            case (read_cntr%4) 
+            1:  read_addr={write_addr[19:7], 1'b0, write_addr[6:0], 1'b1}; 
+            2:  read_addr={write_addr[19:7], 1'b1, write_addr[6:0], 1'b1}; 
+            3:  read_addr={write_addr[19:7], 1'b1, write_addr[6:0], 1'b0}; 
+            default: begin  
+                if (work_cntr>20'd6) begin 
+                    if ((work_cntr-20'd7)%6<3) 
+                        read_addr={write_addr[19:7], 1'b0, write_addr[6:0], 1'b0}; 
+                    else 
+                        read_addr={next_write_addr[19:7], 1'b0, next_write_addr[6:0], 1'b0}; 
+                end else begin 
+                    if (work_cntr<20'd4) 
+                        read_addr={write_addr[19:7], 1'b0, write_addr[6:0], 1'b0}; 
+                    else 
+                        read_addr={next_write_addr[19:7], 1'b0, next_write_addr[6:0], 1'b0}; 
+                end 
             end 
+            endcase 
         end else // normal-size    
             read_addr=(read_cntr%2==1'b0)?write_addr:next_write_addr; 
     end else // state==SETUP||state==PHOTO_SET||state==TIME_SI
