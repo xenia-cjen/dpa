@@ -15,7 +15,8 @@ syn : testfixture.v DPA_syn.v tsmc13.v DPA_syn.sdf
 	$(COM) $(SYN_OPTS) $(SYN_SRC_FILE) -v $(TECH_FILE) +define+SDF$(SYN_OPTION)
 
 clean :
-	@rm -rf *.vcd* tb* ncverilog.* INCA_libs vfastLog
+	@rm -rf *.vcd* tb* ncverilog.* novas.rc 
+	@rm -rf INCA_libs nWaveLog VerdiLog vfastLog 
 
 synclean : 
-	@rm -rf *-verilog.syn *.mr *.pvl 
+	@rm -rf *-verilog.syn *.mr *.pvl default.svf
