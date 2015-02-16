@@ -4,7 +4,7 @@
 // Filename      : CONT.v
 // Author        : r04099
 // Created On    : 2015-11-06 04:43
-// Last Modified : 2015-02-16 21:33
+// Last Modified : 2015-02-17 00:21
 // -------------------------------------------------------------------------------------------------
 // Svn Info:
 //   $Revision::                                                                                $:
@@ -60,7 +60,7 @@ output                                  en_curr_photo_size;
 
 //output reg                            en_shift; 
 
-output reg                              si_sel; 
+output                                  si_sel; 
 output                                  init_time_mux_sel; 
 output          [1:0]                   sftr_n; 
 output reg      [1:0]                   so_mux_sel;  
@@ -71,13 +71,17 @@ output reg      [3:0]                   expand_sel;
 // state register & enum 
 // -------------------------------------------------------------------------------------------------
 
-reg     [1:0]                           state; 
-reg     [1:0]                           next_state; 
+reg     [2:0]                           state; 
+reg     [2:0]                           next_state; 
 
-localparam      SETUP                 = 2'b00; 
-localparam      PHOTO_SET             = 2'b01; 
-localparam      PHOTO_SI              = 2'b10; 
-localparam      TIME_SI               = 2'b11; 
+localparam      SETUP                 = 3'b000; 
+localparam      PHOTO_SET             = 3'b001; 
+localparam      PHOTO_SI              = 3'b010; 
+localparam      TIME_SI               = 3'b011; 
+localparam      NEXT_PHOTO_SI         = 3'b100; 
+localparam      NEXT_TIME_SI          = 3'b101; 
+
+localparam      MAX_CR_WRITE_CNTR     = 20'd2496;
 // -------------------------------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------------------------------
@@ -94,10 +98,14 @@ wire    [19:0]                          read_cntr;
 reg     [19:0]                          next_read_cntr; 
 wire    [19:0]                          write_cntr; 
 reg     [19:0]                          next_write_cntr; 
+reg     [19:0]                          max_write_cntr;
 
 reg     [19:0]                          read_addr; 
 wire    [19:0]                          write_addr; 
 reg     [19:0]                          next_write_addr; 
+
+wire    [8:0]                           cr_read_cntr; 
+reg     [8:0]                           next_cr_read_cntr; 
 
 reg     [1:0]                           curr_photo; 
 reg     [1:0]                           next_photo; 
@@ -111,52 +119,57 @@ assign en_photo_num  = (state==SETUP&&global_cntr==20'd4);
 assign en_curr_photo_addr = (global_cntr==20'd5); 
 assign en_curr_photo_size = (global_cntr==20'd6); 
 
+assign si_sel            = ((state==TIME_SI)||(state==NEXT_TIME_SI)); 
 assign init_time_mux_sel = (state!=SETUP); 
 assign sftr_n            = 2'd2; //TODO:scale-support 
 
-reg     [9:0]                           row;
 always@* begin 
+    // upper-bound of write counter 
+    if (curr_photo_size==2'b01) // 128*128-size 
+        max_write_cntr = 20'd65536; //XXX
+    else 
+        max_write_cntr = 20'd65536; 
+    // ---------------------------------------------------------------------------------------------
+        
     // next-state logic 
     if (state==PHOTO_SI) 
-        next_state = (next_glb_cntr!=20'd0)?PHOTO_SI:TIME_SI; 
-    else if (state==TIME_SI) 
-        next_state = (next_glb_cntr!=20'd0)?TIME_SI:PHOTO_SET; 
+        next_state = (write_cntr<max_write_cntr)?PHOTO_SI:TIME_SI; 
+    else if (state==TIME_SI)  
+        next_state = (write_cntr<MAX_CR_WRITE_CNTR)?TIME_SI:NEXT_PHOTO_SI; 
+    else if (state==NEXT_PHOTO_SI) 
+        next_state = (next_glb_cntr!=20'd0)?NEXT_PHOTO_SI:NEXT_TIME_SI; 
+    else if (state==NEXT_TIME_SI) 
+        next_state = (next_glb_cntr!=20'd0)?NEXT_TIME_SI:PHOTO_SET; 
     else if (state==PHOTO_SET) 
         next_state = (next_glb_cntr>=20'd6)?PHOTO_SI:PHOTO_SET;
     else // state==SETUP
         next_state = (next_glb_cntr>=20'd5)?PHOTO_SET:SETUP;
     // ---------------------------------------------------------------------------------------------
 
-    // row-logic
-    if (curr_photo_size==2'b01) // 128*128-size 
-        row = 10'd128; 
-    else if (curr_photo_size==2'b11) // 512*512-size 
-        row = 10'd512; 
-    else 
-        row = 10'd256; 
-    // ---------------------------------------------------------------------------------------------
-        
     // next rw-counter logic
-    if (next_state==PHOTO_SI || next_state==TIME_SI) begin 
-        if (state!=next_state) begin //counter init 
-            next_read_cntr  = 20'd0; 
-            next_write_cntr = 20'd0; 
-        end else begin 
-            //TODO:scale-support  
-                next_write_cntr=(write_cntr>=20'd65536)?write_cntr:write_cntr+1;
-
-            //TODO:scale-support 
-                next_read_cntr =(write_cntr>=20'd65536)?read_cntr:read_cntr+1;
-        end 
+    if (next_state!=state) begin //counter init 
+        next_read_cntr  = 20'd0; 
+        next_write_cntr = 20'd0; 
+        next_cr_read_cntr = 20'd0; 
+    end else if (next_state==PHOTO_SI || next_state==NEXT_PHOTO_SI) begin 
+        //TODO:scale-support 
+            next_read_cntr =(write_cntr<max_write_cntr)?read_cntr+1:read_cntr;
+        //TODO:scale-support  
+            next_write_cntr=(write_cntr<max_write_cntr)?write_cntr+1:write_cntr;
+            next_cr_read_cntr = cr_read_cntr;  
+    end else if (next_state==TIME_SI || next_state==NEXT_TIME_SI) begin 
+        next_read_cntr =read_cntr;
+        next_write_cntr=(write_cntr<MAX_CR_WRITE_CNTR)?write_cntr+1:write_cntr;
+        next_cr_read_cntr =(write_cntr<MAX_CR_WRITE_CNTR)?read_cntr+1:read_cntr;
     end else begin 
         next_read_cntr  = read_cntr; 
         next_write_cntr = write_cntr; 
+        next_cr_read_cntr = cr_read_cntr;  
     end 
-
     // ---------------------------------------------------------------------------------------------
 
     // read-address logic
-    if (state==PHOTO_SI) begin 
+    if (state==PHOTO_SI || state==NEXT_PHOTO_SI) begin 
         //TODO:scale-support 
         if (curr_photo_size==2'b11) begin // 512*512-size
             case (read_cntr%4) 
@@ -184,15 +197,13 @@ always@* begin
     // ---------------------------------------------------------------------------------------------
 
     // write-address logic
-    if (next_state==PHOTO_SI) begin 
-        if (state==PHOTO_SET) // write_addr init 
+    if (next_state!=state)
             next_write_addr = 20'd0; 
-        else begin 
-            //TODO:time-lab->scale-support  
-            //if (curr_photo_size==2'b11) begin // 512*512-size
-            //end else 
-                next_write_addr=write_addr+1; 
-        end 
+    else if (next_state==PHOTO_SI) begin 
+        //TODO:time-lab->scale-support  
+        //if (curr_photo_size==2'b01) begin // 128*128-size
+        //end else 
+            next_write_addr=write_addr+1; 
     //end else if (next_state==TIME_SI) begin //TODO:time-lab
     end else // next_state==SETUP||next_state==PHOTO_SET
         next_write_addr = write_addr; 
@@ -234,18 +245,18 @@ always@* begin
                 if ((work_cntr-20'd7)%6<5) 
                     im_wen_n = 1'b1; 
                 else 
-                    im_wen_n = (write_cntr>=20'd65536); 
+                    im_wen_n = (write_cntr>=max_write_cntr); 
             end else begin 
                 if (work_cntr<20'd6) 
                     im_wen_n = 1'b1; 
                 else 
-                    im_wen_n = (write_cntr>=20'd65536); 
+                    im_wen_n = (write_cntr>=max_write_cntr); 
             end 
         end else begin // normal-size
             if (work_cntr%5<3) 
                 im_wen_n = 1'b1; 
             else
-                im_wen_n = (write_cntr>=20'd65536); 
+                im_wen_n = (write_cntr>=max_write_cntr); 
         end 
     //end else if (state==TIME_SI) begin //TODO:time-lab
     end else // state==SETUP&&state==PHOTO_SET 
@@ -271,16 +282,6 @@ always@* begin
         next_en_si      = (next_glb_cntr>=4);
     else // state==SETUP
         next_en_si      = (next_glb_cntr>=1); 
-    // ---------------------------------------------------------------------------------------------
-
-    // serial-out mux. selector 
-    if (state==PHOTO_SI) begin 
-        si_sel = 1'b0; //TODO:time-lab
-    end else if (state==TIME_SI) 
-        si_sel = 1'b1; 
-    else  
-        si_sel = 1'b0; 
-            
     // ---------------------------------------------------------------------------------------------
 
     // serial-out mux. selector 
@@ -330,19 +331,13 @@ end
 always@(posedge clk or posedge reset) begin 
     if (reset==1'b1) begin 
         state                        <= SETUP; 
-
         global_cntr                  <= 20'd0; 
-
         en_si                        <= 1'b1; 
-
         curr_photo                   <= 2'd0; 
     end else begin 
         state                        <= next_state; 
-
         global_cntr                  <= next_glb_cntr; 
-
         en_si                        <= next_en_si; 
-
         curr_photo                   <= next_photo; 
     end 
 end 
@@ -350,7 +345,8 @@ end
 p_dff #(.WORD(20), .NSEL(5))
     write_addr_reg(.clk(clk), 
          .reset(reset), 
-         .en(im_wen_n==1'b0||(next_state==PHOTO_SI&&state==PHOTO_SET)), 
+         .en(im_wen_n==1'b0 || 
+            (next_state!=state)), 
          .sel(5'd31), 
          .d(next_write_addr),
          .q(write_addr)); 
@@ -358,15 +354,26 @@ p_dff #(.WORD(20), .NSEL(5))
 p_dff #(.WORD(20), .NSEL(5))
     read_cntr_reg(.clk(clk), 
          .reset(reset), 
-         .en(next_en_si), //XXX
+         .en(next_en_si==1'b1 ||
+            (next_state!=state)), 
          .sel(5'd31), 
          .d(next_read_cntr),
          .q(read_cntr)); 
 
+p_dff #(.WORD(9), .NSEL(4))
+    cr_read_cntr_reg(.clk(clk), 
+         .reset(reset), 
+         .en(next_en_si==1'b1 ||
+            (next_state!=state)), 
+         .sel(4'd15), 
+         .d(next_cr_read_cntr),
+         .q(cr_read_cntr)); 
+
 p_dff #(.WORD(20), .NSEL(5))
     write_cntr_reg(.clk(clk), 
          .reset(reset), 
-         .en(!im_wen_n), //XXX
+         .en(im_wen_n==1'b0 ||
+            (next_state!=state)), 
          .sel(5'd31), 
          .d(next_write_cntr),
          .q(write_cntr)); 
