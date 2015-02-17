@@ -4,7 +4,7 @@
 // Filename      : DP.v
 // Author        : r04099
 // Created On    : 2015-11-06 22:58
-// Last Modified : 2015-02-17 22:04
+// Last Modified : 2015-02-18 07:27
 // -------------------------------------------------------------------------------------------------
 // Svn Info:
 //   $Revision::                                                                                $:
@@ -91,12 +91,14 @@ wire            [9:0]                   sftr_r;
 
 wire            [23:0]                  expand; 
 
+reg             [23:0]                  next_time; 
+
 reg             [29:0]                  so_mux; 
 reg             [1:0]                   curr_photo_size_sel; 
 
 assign si_mux           = (si_sel==1'b0)?im_q:cr_q;
 
-assign init_time_mux    = (init_time_mux_sel==1'b1)?curr_time+1:si_w;
+assign init_time_mux    = (init_time_mux_sel==1'b1)?next_time:si_w;
 
 assign photo_num_w      = si_w-1; 
 
@@ -108,10 +110,20 @@ assign sftr_b           = addr_b >> sftr_n;
 assign sftr_g           = addr_g >> sftr_n; 
 assign sftr_r           = addr_r >> sftr_n; 
 
-assign expand           = (expand_sel!=4'd13)?{24{si_w[4'd12-expand_sel]}}:24'd0; 
-//assign expand         = {24{si_w[4'd11-expand_sel]}}; 
+assign expand           = (expand_sel<4'd13)?{24{si_w[4'd12-expand_sel]}}:24'd0; 
 
 always@* begin 
+    // next-time logic 
+    if (curr_time[7:0]>=8'd59) begin 
+        next_time[7:0]=8'd0; 
+        if (curr_time[15:8]>=8'd59) begin 
+            next_time[15:8] =8'd0; 
+            next_time[23:16]=(curr_time[23:16]>=8'd23)?8'd0:curr_time[23:16]+1;
+        end else  
+            next_time[23:8] =curr_time[23:8]+8'd1; 
+    end else 
+        next_time=curr_time+1; 
+
     // so_mux logic 
     case (so_mux_sel) 
     ADD:   so_mux={addr_r, addr_g, addr_b}; 

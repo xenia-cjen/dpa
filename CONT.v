@@ -4,7 +4,7 @@
 // Filename      : CONT.v
 // Author        : r04099
 // Created On    : 2015-11-06 04:43
-// Last Modified : 2015-02-17 22:16
+// Last Modified : 2015-02-18 07:32
 // -------------------------------------------------------------------------------------------------
 // Svn Info:
 //   $Revision::                                                                                $:
@@ -261,11 +261,11 @@ always@* begin
     if (next_state!=state)
             next_write_addr = 20'd0; 
     else if (next_state==PHOTO_SI) begin 
-        //TODO:time-lab->scale-support  
+        //TODO:scale-support  
         //if (curr_photo_size==2'b01) begin // 128*128-size
         //end else 
             next_write_addr=next_write_cntr; 
-    end else if (next_state==TIME_SI || next_state==NEXT_TIME_SI) begin //TODO:time-lab
+    end else if (next_state==TIME_SI || next_state==NEXT_TIME_SI) begin 
         next_write_addr=next_cr_y*20'd256+next_cr_x*20'd13+next_write_cntr%13; 
     end else // next_state==SETUP||next_state==PHOTO_SET
         next_write_addr = write_addr; 
@@ -292,7 +292,7 @@ always@* begin
             else
                 im_a = write_addr+fb_addr; 
         end 
-    end else if (state==TIME_SI||state==NEXT_TIME_SI) begin //TODO:time-lab
+    end else if (state==TIME_SI||state==NEXT_TIME_SI) begin 
         im_a = write_addr+fb_addr+CR_OFFSET; 
     end else if (state==PHOTO_SET)
         im_a = global_cntr+2*curr_photo; 
@@ -322,15 +322,15 @@ always@* begin
             else
                 im_wen_n = (write_cntr>=max_write_cntr); 
         end 
-    end else if (state==TIME_SI||state==NEXT_TIME_SI) begin //TODO:time-lab
+    end else if (state==TIME_SI||state==NEXT_TIME_SI) begin 
         if (work_cntr>20'd15) begin 
             if ((work_cntr-20'd16)%14>0) 
-                im_wen_n = 1'b0; 
+                im_wen_n = (write_cntr>=MAX_CR_WRITE_CNTR); 
             else 
                 im_wen_n = 1'b1; 
         end else begin 
             if (work_cntr>20'd2) 
-                im_wen_n = 1'b0; 
+                im_wen_n = (write_cntr>=MAX_CR_WRITE_CNTR); 
             else 
                 im_wen_n = 1'b1; 
         end 
@@ -353,7 +353,7 @@ always@* begin
                 next_en_si  = (((work_cntr+1)%5<3)&&((work_cntr+1)%5>0)); 
         end else 
             next_en_si  = 1'b0; 
-    end else if (state==TIME_SI||state==NEXT_TIME_SI) begin //TODO:time-lab
+    end else if (state==TIME_SI||state==NEXT_TIME_SI) begin 
         if (next_work_cntr>20'd16) begin 
             next_en_si = ((next_work_cntr-20'd17)%14==12);  
         end else begin 
@@ -409,7 +409,7 @@ always@* begin
     // serial-out register enable 
     if (state==PHOTO_SI || state==NEXT_PHOTO_SI) begin 
         en_so      = 1'b1;
-    end else if (state==TIME_SI || state==NEXT_TIME_SI) begin //TODO:time-lab
+    end else if (state==TIME_SI || state==NEXT_TIME_SI) begin 
         en_so      = 1'b1;
     end else // state==SETUP || PHOTO_SET
         en_so      = 1'b0; 
