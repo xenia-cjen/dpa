@@ -1,0 +1,139 @@
+ncverilog -notimingcheck  testfixture.v DPA.v +access+r +define+tb2
+ncverilog: 10.20-s114: (c) Copyright 1995-2012 Cadence Design Systems, Inc.
+file: testfixture.v
+	module worklib.FB:v
+		errors: 0, warnings: 0
+	module worklib.test:v
+		errors: 0, warnings: 0
+file: DPA.v
+	module worklib.p_dff:v
+		errors: 0, warnings: 0
+	module worklib.DP:v
+		errors: 0, warnings: 0
+	module worklib.CONT:v
+		errors: 0, warnings: 0
+	module worklib.DPA:v
+		errors: 0, warnings: 0
+		Caching library 'worklib' ....... Done
+	Elaborating the design hierarchy:
+	Building instance overlay tables: .................... Done
+	Generating native compiled code:
+		worklib.CONT:v <0x49cb158d>
+			streams:  20, words: 26197
+		worklib.DP:v <0x4cee707e>
+			streams:  13, words:  4519
+		worklib.DPA:v <0x0f6f427d>
+			streams:   1, words:   176
+		worklib.FB:v <0x619d680a>
+			streams:  20, words: 74242
+		worklib.p_dff:v <0x2e6a8756>
+			streams:   4, words:  1328
+		worklib.p_dff:v <0x3be9f230>
+			streams:   4, words:  1357
+		worklib.p_dff:v <0x494bbc30>
+			streams:   4, words:  1360
+		worklib.p_dff:v <0x6002e32d>
+			streams:   4, words:  1360
+		worklib.p_dff:v <0x75a984c0>
+			streams:   4, words:  1360
+		worklib.test:v <0x70e2abb9>
+			streams:  14, words: 12461
+	Loading native compiled code:     .................... Done
+	Building instance specific data structures.
+	Design hierarchy summary:
+		                   Instances  Unique
+		Modules:                  18       8
+		Primitives:              137       1
+		Timing outputs:           61       1
+		Registers:               216     206
+		Scalar wires:            284       -
+		Expanded wires:          130       7
+		Vectored wires:           52       -
+		Always blocks:            26      16
+		Initial blocks:            5       5
+		Cont. assignments:       218      47
+		Pseudo assignments:       12      12
+		Timing checks:           301       -
+		Simulation timescale:  100ps
+	Writing initial simulation snapshot: worklib.test:v
+Loading snapshot worklib.test:v .................... Done
+ncsim> source /usr/cad/cadence/INCISIV/cur/tools/inca/files/ncsimrc
+ncsim> run
+FB init addr = 000cd000
+=======  tick  0,  time=12:12:59  ========
+ check at   0.400001 sec
+   -- image saved , filename =   tb2_image00.xpm
+
+   -- Verify FB fail,  first ERROR is at (230,235), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (230,236), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (230,237), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (243,237), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (165,238), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (204,238), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (230,238), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (243,238), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (165,239), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (204,239), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (230,239), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (243,239), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (230,240), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (243,240), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (230,241), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (243,241), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (230,242), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (243,242), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (230,243), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (243,243), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (230,244), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (243,244), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (243,245), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (230,248), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (230,249), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (243,249), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (230,250), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (243,250), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (230,251), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (243,251), Got ffffff, Expect 000000
+
+   -- Verify FB fail,  first ERROR is at (230,252), Got ffffff, Expect 000000
+   -- Dump Frame Buffer, dumpfile =   tb2_image00.out
+
+
+                                             \|/    _--_ 
+      ************************************* <' \___/_--_ 
+      **  ERROR found , break simulation **  \_  _/--_   
+      *************************************    ][       
+
+
+Simulation complete via $finish(1) at time 400003 US + 1
+./FB.v:773         $finish;
+ncsim> exit

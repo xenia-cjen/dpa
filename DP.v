@@ -4,7 +4,7 @@
 // Filename      : DP.v
 // Author        : r04099
 // Created On    : 2015-11-06 22:58
-// Last Modified : 2015-02-17 15:17
+// Last Modified : 2015-02-17 22:04
 // -------------------------------------------------------------------------------------------------
 // Svn Info:
 //   $Revision::                                                                                $:
@@ -108,7 +108,8 @@ assign sftr_b           = addr_b >> sftr_n;
 assign sftr_g           = addr_g >> sftr_n; 
 assign sftr_r           = addr_r >> sftr_n; 
 
-assign expand           = {24{si_w[4'd12-expand_sel]}}; 
+assign expand           = (expand_sel!=4'd13)?{24{si_w[4'd12-expand_sel]}}:24'd0; 
+//assign expand         = {24{si_w[4'd11-expand_sel]}}; 
 
 always@* begin 
     // so_mux logic 

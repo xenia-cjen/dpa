@@ -4,7 +4,7 @@
 // Filename      : CONT.v
 // Author        : r04099
 // Created On    : 2015-11-06 04:43
-// Last Modified : 2015-02-17 15:46
+// Last Modified : 2015-02-17 22:16
 // -------------------------------------------------------------------------------------------------
 // Svn Info:
 //   $Revision::                                                                                $:
@@ -189,7 +189,7 @@ always@* begin
     end else if (next_state==TIME_SI || next_state==NEXT_TIME_SI) begin 
         next_read_cntr =read_cntr;
         next_write_cntr=(write_cntr<MAX_CR_WRITE_CNTR)?write_cntr+1:write_cntr;
-        next_cr_read_cntr =(write_cntr<MAX_CR_WRITE_CNTR)?read_cntr+1:read_cntr;
+        next_cr_read_cntr =(write_cntr<MAX_CR_WRITE_CNTR)?cr_read_cntr+1:cr_read_cntr;
     end else begin 
         next_read_cntr  = read_cntr; 
         next_write_cntr = write_cntr; 
@@ -227,19 +227,20 @@ always@* begin
 
     // cr-read-address logic
     if (state==TIME_SI || state==NEXT_TIME_SI) begin 
-        if(work_cntr>20'd0) 
+        //if(work_cntr>20'd1) begin 
             case (cr_x) 
-            0:  cr_a = (cr_y<=next_cr_y)?h_1*9'd24+next_cr_y:(h_1+1)*9'd24+next_cr_y; 
-            1:  cr_a = (cr_y<=next_cr_y)?h_0*9'd24+next_cr_y:(h_0+1)*9'd24+next_cr_y; 
-            3:  cr_a = (cr_y<=next_cr_y)?m_1*9'd24+next_cr_y:(m_1+1)*9'd24+next_cr_y; 
-            4:  cr_a = (cr_y<=next_cr_y)?m_0*9'd24+next_cr_y:(m_0+1)*9'd24+next_cr_y; 
-            6:  cr_a = (cr_y<=next_cr_y)?s_1*9'd24+next_cr_y:(s_1+1)*9'd24+next_cr_y; 
-            7:  cr_a = (cr_y<=next_cr_y)?s_0*9'd24+next_cr_y:(s_0+1)*9'd24+next_cr_y; 
+            0:  cr_a = h_1*9'd24+cr_read_cntr%24; 
+            1:  cr_a = h_0*9'd24+cr_read_cntr%24; 
+            3:  cr_a = m_1*9'd24+cr_read_cntr%24; 
+            4:  cr_a = m_0*9'd24+cr_read_cntr%24; 
+            6:  cr_a = s_1*9'd24+cr_read_cntr%24; 
+            7:  cr_a = s_0*9'd24+cr_read_cntr%24; 
             default: begin 
-                cr_a = 9'd240+next_cr_y; 
+                cr_a = 9'd240+cr_read_cntr%24; 
             end 
             endcase 
-        else 
+        /*    
+        end else begin 
             case (cr_x) 
             0:  cr_a = h_1*9'd24+cr_y; 
             1:  cr_a = h_0*9'd24+cr_y; 
@@ -251,6 +252,7 @@ always@* begin
                 cr_a = 9'd240+cr_y; 
             end 
             endcase 
+        end */ 
     end else // state==SETUP||state==PHOTO_SET||state==TIME_SI
         cr_a = 9'd0; 
     // ---------------------------------------------------------------------------------------------
@@ -351,7 +353,7 @@ always@* begin
                 next_en_si  = (((work_cntr+1)%5<3)&&((work_cntr+1)%5>0)); 
         end else 
             next_en_si  = 1'b0; 
-    end else if (state==TIME_SI) begin //TODO:time-lab
+    end else if (state==TIME_SI||state==NEXT_TIME_SI) begin //TODO:time-lab
         if (next_work_cntr>20'd16) begin 
             next_en_si = ((next_work_cntr-20'd17)%14==12);  
         end else begin 
@@ -392,10 +394,7 @@ always@* begin
     // expanding selector 
     if (state==TIME_SI || state==NEXT_TIME_SI) begin
         if (work_cntr>20'd15) begin 
-            if ((work_cntr-20'd16)%14>0) 
-                expand_sel = ((work_cntr-20'd16)%14) - 4'd1; 
-            else 
-                expand_sel = 4'd0; 
+            expand_sel = ((work_cntr-20'd16)%14); 
         end else begin 
             if (work_cntr>20'd1&&work_cntr<20'd15) 
                 expand_sel = work_cntr - 20'd1; 

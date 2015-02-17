@@ -2,7 +2,7 @@ Magic 271485
 Revision 2012.04
 
 ; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
-viewPort -4 1 1280 751 182 65
+viewPort 61 2 1215 776 182 65
 
 ; File list:
 ; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
@@ -15,17 +15,19 @@ openDirFile -d / "" "/home/raid5_3/user04/r04099/Documents/cvsd/hw/hw3/DPA.vcd" 
 signalSpacing 3
 
 ; windowTimeUnit is used for zoom, cursor & marker
+windowTimeUnit 1ns
+
 ; waveform viewport range
-zoom 3932216611.207146 3932415703.335930
-cursor 3932250000.000000
+zoom 0.000000 1400003000.000000 1n
+cursor 395916000.000000
 marker 0.000000
 
 ; user define markers
 ; userMarker time_pos marker_name color linestyle
 ; visible top row signal index
-top 0
+top 1
 ; marker line index
-markerPos 19
+markerPos 22
 
 ; event list
 ; addEvent event_name event_expression
@@ -53,23 +55,23 @@ addSignal -h 15 /BLANK
 addSignal -h 15 -UNSIGNED -HEX /test/DPA/ctrl_logic/global_cntr[19:0]
 addSignal -h 15 -UNSIGNED -HEX -holdScope work_cntr[19:0]
 addSignal -h 15 /BLANK
-addSignal -h 15 -UNSIGNED -HEX /test/DPA/ctrl_logic/next_state[1:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope state[1:0]
+addSignal -h 15 -UNSIGNED -HEX /test/DPA/ctrl_logic/state[2:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope next_state[2:0]
 addSignal -h 15 /BLANK
-addSignal -h 15 -UNSIGNED -HEX /test/DPA/ctrl_logic/im_a[19:0]
+addSignal -h 15 -UNSIGNED -UDEC /test/DPA/ctrl_logic/im_a[19:0]
 addSignal -h 15 -holdScope im_wen_n
-addSignal -h 15 -UNSIGNED -HEX /test/DPA/data_path/im_q[23:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope si_w[23:0]
+addSignal -h 15 -UNSIGNED -BIN /test/DPA/data_path/si_mux[23:0]
+addSignal -h 15 -UNSIGNED -BIN -holdScope si_w[23:0]
 addSignal -h 15 /BLANK
 addSignal -h 15 -UNSIGNED -UDEC /test/DPA/ctrl_logic/cr_a[8:0]
-addSignal -h 15 -UNSIGNED -HEX /test/DPA/data_path/cr_q[12:0]
-addSignal -h 15 -UNSIGNED -HEX /test/DPA/ctrl_logic/cr_x[8:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope cr_x[8:0]
 addSignal -h 15 -UNSIGNED -HEX -holdScope cr_y[8:0]
 addSignal -h 15 -UNSIGNED -HEX -holdScope next_cr_y[8:0]
 addSignal -h 15 /BLANK
-addSignal -h 15 -UNSIGNED -HEX /test/DPA/ctrl_logic/so_mux_sel[1:0]
+addSignal -h 15 -UNSIGNED -HEX /test/DPA/ctrl_logic/cr_read_cntr[8:0]
 addSignal -h 15 /BLANK
-addSignal -h 15 -UNSIGNED -HEX /test/DPA/data_path/im_d[29:0]
+addSignal -h 15 -UNSIGNED -HEX /test/DPA/data_path/so_mux[29:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope im_d[29:0]
 addSignal -h 15 -UNSIGNED -HEX /test/DPA/IM_D[23:0]
 addSignal -h 15 /BLANK
 addSignal -h 15 /test/DPA/ctrl_logic/en_si
@@ -78,11 +80,11 @@ addSignal -h 15 /BLANK
 addSignal -h 15 -UNSIGNED -HEX /test/DPA/ctrl_logic/read_cntr[19:0]
 addSignal -h 15 -UNSIGNED -HEX -holdScope read_addr[19:0]
 addSignal -h 15 /BLANK
-addSignal -h 15 -UNSIGNED -HEX /test/DPA/ctrl_logic/write_cntr[19:0]
+addSignal -h 15 -UNSIGNED -UDEC /test/DPA/ctrl_logic/write_cntr[19:0]
 addSignal -h 15 -UNSIGNED -HEX -holdScope write_addr[19:0]
 addSignal -h 15 /BLANK
 addSignal -h 15 -UNSIGNED -HEX /test/DPA/ctrl_logic/curr_time[23:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope fb_addr[19:0]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope fb_addr[19:0]
 addSignal -h 15 -UNSIGNED -HEX -holdScope photo_num[1:0]
 addSignal -h 15 /BLANK
 addSignal -h 15 -UNSIGNED -HEX /test/DPA/ctrl_logic/curr_photo_addr[19:0]
