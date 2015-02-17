@@ -4,7 +4,7 @@
 // Filename      : CONT.v
 // Author        : r04099
 // Created On    : 2015-11-06 04:43
-// Last Modified : 2015-02-17 08:38
+// Last Modified : 2015-02-17 15:46
 // -------------------------------------------------------------------------------------------------
 // Svn Info:
 //   $Revision::                                                                                $:
@@ -116,6 +116,13 @@ wire    [8:0]                           cr_y;
 wire    [8:0]                           next_cr_x; 
 wire    [8:0]                           next_cr_y;           
 
+wire    [3:0]                           h_1; // digit in 10 place of HOUR
+wire    [3:0]                           h_0; // digit in  1 place of HOUR
+wire    [3:0]                           m_1; // digit in 10 place of MINUTE
+wire    [3:0]                           m_0; // digit in  1 place of MINUTE
+wire    [3:0]                           s_1; // digit in 10 place of SECOND
+wire    [3:0]                           s_0; // digit in  1 place of SECOND
+
 reg     [1:0]                           curr_photo; 
 reg     [1:0]                           next_photo; 
 
@@ -137,6 +144,13 @@ assign cr_y              = (write_cntr/20'd13)%24;
 
 assign next_cr_x         = next_write_cntr/20'd312; 
 assign next_cr_y         = (next_write_cntr/20'd13)%24; 
+
+assign h_1               = curr_time[23:16]/24'd10; 
+assign h_0               = curr_time[23:16]%10; 
+assign m_1               = curr_time[15:8]/24'd10; 
+assign m_0               = curr_time[15:8]%10; 
+assign s_1               = curr_time[7:0]/24'd10; 
+assign s_0               = curr_time[7:0]%10; 
 
 always@* begin 
     // upper-bound of write counter 
@@ -214,9 +228,29 @@ always@* begin
     // cr-read-address logic
     if (state==TIME_SI || state==NEXT_TIME_SI) begin 
         if(work_cntr>20'd0) 
-            cr_a = next_cr_y; //TODO
+            case (cr_x) 
+            0:  cr_a = (cr_y<=next_cr_y)?h_1*9'd24+next_cr_y:(h_1+1)*9'd24+next_cr_y; 
+            1:  cr_a = (cr_y<=next_cr_y)?h_0*9'd24+next_cr_y:(h_0+1)*9'd24+next_cr_y; 
+            3:  cr_a = (cr_y<=next_cr_y)?m_1*9'd24+next_cr_y:(m_1+1)*9'd24+next_cr_y; 
+            4:  cr_a = (cr_y<=next_cr_y)?m_0*9'd24+next_cr_y:(m_0+1)*9'd24+next_cr_y; 
+            6:  cr_a = (cr_y<=next_cr_y)?s_1*9'd24+next_cr_y:(s_1+1)*9'd24+next_cr_y; 
+            7:  cr_a = (cr_y<=next_cr_y)?s_0*9'd24+next_cr_y:(s_0+1)*9'd24+next_cr_y; 
+            default: begin 
+                cr_a = 9'd240+next_cr_y; 
+            end 
+            endcase 
         else 
-            cr_a = cr_y; //TODO
+            case (cr_x) 
+            0:  cr_a = h_1*9'd24+cr_y; 
+            1:  cr_a = h_0*9'd24+cr_y; 
+            3:  cr_a = m_1*9'd24+cr_y; 
+            4:  cr_a = m_0*9'd24+cr_y; 
+            6:  cr_a = s_1*9'd24+cr_y; 
+            7:  cr_a = s_0*9'd24+cr_y; 
+            default: begin 
+                cr_a = 9'd240+cr_y; 
+            end 
+            endcase 
     end else // state==SETUP||state==PHOTO_SET||state==TIME_SI
         cr_a = 9'd0; 
     // ---------------------------------------------------------------------------------------------
@@ -265,7 +299,8 @@ always@* begin
     // ---------------------------------------------------------------------------------------------
 
     // im-write-enable logic
-    if (state==PHOTO_SI || state==NEXT_PHOTO_SI) begin 
+    //if (state==PHOTO_SI || state==NEXT_PHOTO_SI) begin 
+    if (state==PHOTO_SI) begin 
         //TODO:scale-support
         if (curr_photo_size==2'b11) begin // 512*512-size
             if (work_cntr>20'd6) begin 
