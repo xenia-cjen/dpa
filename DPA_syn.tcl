@@ -1,6 +1,6 @@
 ###################################################################
 
-# Created by write_script -format dctcl on Tue Nov 10 10:11:20 2015
+# Created by write_script -format dctcl on Wed Nov 11 20:02:42 2015
 
 ###################################################################
 
@@ -8,12 +8,14 @@
 current_design DPA
 
 set_units -time ns -resistance kOhm -capacitance pF -voltage V -current mA
+set_operating_conditions -max slow -max_library slow\
+                         -min fast -min_library fast
 set_wire_load_model -name tsmc13_wl10 -library slow
-set_max_area 0
-set_max_fanout 4 [current_design]
-set_max_transition 1 [current_design]
-set_fix_multiple_port_nets -all -buffer_constants
 set_local_link_library {slow.db}
+set_fix_multiple_port_nets -all
+set_max_transition 1 [current_design]
+set_max_fanout 50 [current_design]
+set_max_area 0
 set_load -pin_load 1 [get_ports {IM_A[19]}]
 set_load -pin_load 1 [get_ports {IM_A[18]}]
 set_load -pin_load 1 [get_ports {IM_A[17]}]
@@ -72,17 +74,6 @@ create_clock [get_ports clk]  -period 1000  -waveform {0 500}
 set_clock_latency 1  [get_clocks clk]
 set_clock_uncertainty 1  [get_clocks clk]
 set_dont_touch_network [get_clocks clk]
-set_min_delay 0.5  -from [get_ports clk]  -to [list [get_ports {IM_A[19]}]     \
-[get_ports {IM_A[18]}] [get_ports {IM_A[17]}] [get_ports {IM_A[16]}]           \
-[get_ports {IM_A[15]}] [get_ports {IM_A[14]}] [get_ports {IM_A[13]}]           \
-[get_ports {IM_A[12]}] [get_ports {IM_A[11]}] [get_ports {IM_A[10]}]           \
-[get_ports {IM_A[9]}] [get_ports {IM_A[8]}] [get_ports {IM_A[7]}] [get_ports   \
-{IM_A[6]}] [get_ports {IM_A[5]}] [get_ports {IM_A[4]}] [get_ports {IM_A[3]}]   \
-[get_ports {IM_A[2]}] [get_ports {IM_A[1]}] [get_ports {IM_A[0]}]]
-set_min_delay -fall 0.5  -from [get_ports clk]  -to [list [get_ports           \
-{CR_A[8]}] [get_ports {CR_A[7]}] [get_ports {CR_A[6]}] [get_ports {CR_A[5]}]   \
-[get_ports {CR_A[4]}] [get_ports {CR_A[3]}] [get_ports {CR_A[2]}] [get_ports   \
-{CR_A[1]}] [get_ports {CR_A[0]}]]
 set_input_delay -clock clk  1  [get_ports reset]
 set_input_delay -clock clk  1  [get_ports {IM_Q[23]}]
 set_input_delay -clock clk  1  [get_ports {IM_Q[22]}]
@@ -141,15 +132,6 @@ set_output_delay -clock clk  1  [get_ports {IM_A[3]}]
 set_output_delay -clock clk  1  [get_ports {IM_A[2]}]
 set_output_delay -clock clk  1  [get_ports {IM_A[1]}]
 set_output_delay -clock clk  1  [get_ports {IM_A[0]}]
-set_output_delay -clock clk  1  [get_ports {CR_A[8]}]
-set_output_delay -clock clk  1  [get_ports {CR_A[7]}]
-set_output_delay -clock clk  1  [get_ports {CR_A[6]}]
-set_output_delay -clock clk  1  [get_ports {CR_A[5]}]
-set_output_delay -clock clk  1  [get_ports {CR_A[4]}]
-set_output_delay -clock clk  1  [get_ports {CR_A[3]}]
-set_output_delay -clock clk  1  [get_ports {CR_A[2]}]
-set_output_delay -clock clk  1  [get_ports {CR_A[1]}]
-set_output_delay -clock clk  1  [get_ports {CR_A[0]}]
 set_output_delay -clock clk  1  [get_ports {IM_D[23]}]
 set_output_delay -clock clk  1  [get_ports {IM_D[22]}]
 set_output_delay -clock clk  1  [get_ports {IM_D[21]}]
@@ -175,6 +157,15 @@ set_output_delay -clock clk  1  [get_ports {IM_D[2]}]
 set_output_delay -clock clk  1  [get_ports {IM_D[1]}]
 set_output_delay -clock clk  1  [get_ports {IM_D[0]}]
 set_output_delay -clock clk  1  [get_ports IM_WEN]
+set_output_delay -clock clk  1  [get_ports {CR_A[8]}]
+set_output_delay -clock clk  1  [get_ports {CR_A[7]}]
+set_output_delay -clock clk  1  [get_ports {CR_A[6]}]
+set_output_delay -clock clk  1  [get_ports {CR_A[5]}]
+set_output_delay -clock clk  1  [get_ports {CR_A[4]}]
+set_output_delay -clock clk  1  [get_ports {CR_A[3]}]
+set_output_delay -clock clk  1  [get_ports {CR_A[2]}]
+set_output_delay -clock clk  1  [get_ports {CR_A[1]}]
+set_output_delay -clock clk  1  [get_ports {CR_A[0]}]
 set_drive 1  [get_ports clk]
 set_drive 1  [get_ports reset]
 set_drive 1  [get_ports {IM_Q[23]}]

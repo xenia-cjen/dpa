@@ -4,7 +4,7 @@
 // Filename      : CONT.v
 // Author        : r04099
 // Created On    : 2015-11-06 04:43
-// Last Modified : 2015-02-18 07:32
+// Last Modified : 2015-02-19 06:11
 // -------------------------------------------------------------------------------------------------
 // Svn Info:
 //   $Revision::                                                                                $:
@@ -106,6 +106,7 @@ reg     [19:0]                          max_write_cntr;
 reg     [19:0]                          read_addr; 
 wire    [19:0]                          write_addr; 
 reg     [19:0]                          next_write_addr; 
+wire    [19:0]                          next_write_addr_w; 
 
 wire    [8:0]                           cr_read_cntr; 
 reg     [8:0]                           next_cr_read_cntr; 
@@ -139,6 +140,8 @@ assign si_sel            = ((state==TIME_SI)||(state==NEXT_TIME_SI));
 assign init_time_mux_sel = (state!=SETUP); 
 assign sftr_n            = 2'd2; //TODO:scale-support 
 
+assign next_write_addr_w = write_addr+20'd2; 
+
 assign cr_x              = write_cntr/20'd312; 
 assign cr_y              = (write_cntr/20'd13)%24; 
 
@@ -155,22 +158,22 @@ assign s_0               = curr_time[7:0]%10;
 always@* begin 
     // upper-bound of write counter 
     if (curr_photo_size==2'b01) // 128*128-size 
-        max_write_cntr = 20'd65536; //XXX
+        max_write_cntr = 20'd31520; //XXX
     else 
-        max_write_cntr = 20'd65536; 
+        max_write_cntr = 20'd31520; 
     // ---------------------------------------------------------------------------------------------
         
     // next-state logic 
     if (state==PHOTO_SI) 
         next_state = (write_cntr<max_write_cntr)?PHOTO_SI:TIME_SI; 
     else if (state==TIME_SI)  
-        next_state = (write_cntr<MAX_CR_WRITE_CNTR)?TIME_SI:NEXT_PHOTO_SI; 
+        next_state = (next_glb_cntr<20'd20_0000)?TIME_SI:NEXT_PHOTO_SI; 
     else if (state==NEXT_PHOTO_SI) 
         next_state = (next_glb_cntr!=20'd0)?NEXT_PHOTO_SI:NEXT_TIME_SI; 
     else if (state==NEXT_TIME_SI) 
         next_state = (next_glb_cntr!=20'd0)?NEXT_TIME_SI:PHOTO_SET; 
     else if (state==PHOTO_SET) 
-        next_state = (next_glb_cntr>=20'd6)?PHOTO_SI:PHOTO_SET;
+        next_state = (next_glb_cntr>=20'd7)?PHOTO_SI:PHOTO_SET;
     else // state==SETUP
         next_state = (next_glb_cntr>=20'd5)?PHOTO_SET:SETUP;
     // ---------------------------------------------------------------------------------------------
@@ -227,44 +230,53 @@ always@* begin
 
     // cr-read-address logic
     if (state==TIME_SI || state==NEXT_TIME_SI) begin 
-        //if(work_cntr>20'd1) begin 
-            case (cr_x) 
-            0:  cr_a = h_1*9'd24+cr_read_cntr%24; 
-            1:  cr_a = h_0*9'd24+cr_read_cntr%24; 
-            3:  cr_a = m_1*9'd24+cr_read_cntr%24; 
-            4:  cr_a = m_0*9'd24+cr_read_cntr%24; 
-            6:  cr_a = s_1*9'd24+cr_read_cntr%24; 
-            7:  cr_a = s_0*9'd24+cr_read_cntr%24; 
-            default: begin 
-                cr_a = 9'd240+cr_read_cntr%24; 
-            end 
-            endcase 
-        /*    
-        end else begin 
-            case (cr_x) 
-            0:  cr_a = h_1*9'd24+cr_y; 
-            1:  cr_a = h_0*9'd24+cr_y; 
-            3:  cr_a = m_1*9'd24+cr_y; 
-            4:  cr_a = m_0*9'd24+cr_y; 
-            6:  cr_a = s_1*9'd24+cr_y; 
-            7:  cr_a = s_0*9'd24+cr_y; 
-            default: begin 
-                cr_a = 9'd240+cr_y; 
-            end 
-            endcase 
-        end */ 
+        case (cr_x) 
+        0:  cr_a = h_1*9'd24+cr_read_cntr%24; 
+        1:  cr_a = h_0*9'd24+cr_read_cntr%24; 
+        3:  cr_a = m_1*9'd24+cr_read_cntr%24; 
+        4:  cr_a = m_0*9'd24+cr_read_cntr%24; 
+        6:  cr_a = s_1*9'd24+cr_read_cntr%24; 
+        7:  cr_a = s_0*9'd24+cr_read_cntr%24; 
+        default: begin 
+            cr_a = 9'd240+cr_read_cntr%24; 
+        end 
+        endcase 
     end else // state==SETUP||state==PHOTO_SET||state==TIME_SI
         cr_a = 9'd0; 
     // ---------------------------------------------------------------------------------------------
 
     // write-address logic
     if (next_state!=state)
-            next_write_addr = 20'd0; 
-    else if (next_state==PHOTO_SI) begin 
-        //TODO:scale-support  
-        //if (curr_photo_size==2'b01) begin // 128*128-size
-        //end else 
-            next_write_addr=next_write_cntr; 
+        next_write_addr = (next_state!=PHOTO_SI)?20'd0:20'd1; 
+    else if (next_state==PHOTO_SI||next_state==NEXT_PHOTO_SI) begin 
+        if(next_write_addr_w[19:8]>=12'd232&&next_write_addr_w[7:0]>=8'd152) begin  
+            if ((next_write_addr_w[19:8]+12'd1)%2==0) begin 
+                if (next_state==PHOTO_SI)
+                    next_write_addr={next_write_addr_w[19:8]+12'd1, {7{1'b0}}, 1'b1}; 
+                else 
+                    next_write_addr={next_write_addr_w[19:8]+12'd1, {7{1'b0}}, 1'b0}; 
+            end else begin 
+                if (next_state==PHOTO_SI)
+                    next_write_addr={next_write_addr_w[19:8]+12'd1, {7{1'b0}}, 1'b0}; 
+                else 
+                    next_write_addr={next_write_addr_w[19:8]+12'd1, {7{1'b0}}, 1'b1}; 
+            end 
+        end else begin  
+            if (next_write_addr_w[19:8]>write_addr[19:8]) begin //next-line logic 
+                if (next_write_addr_w[19:8]%2==0) begin 
+                    if (next_state==PHOTO_SI)
+                        next_write_addr={next_write_addr_w[19:8], {7{1'b0}}, 1'b1}; 
+                    else 
+                        next_write_addr={next_write_addr_w[19:8], {7{1'b0}}, 1'b0}; 
+               end else begin 
+                    if (next_state==PHOTO_SI)
+                        next_write_addr={next_write_addr_w[19:8], {7{1'b0}}, 1'b0}; 
+                    else 
+                        next_write_addr={next_write_addr_w[19:8], {7{1'b0}}, 1'b1}; 
+               end 
+            end else 
+                next_write_addr=next_write_addr_w; 
+        end 
     end else if (next_state==TIME_SI || next_state==NEXT_TIME_SI) begin 
         next_write_addr=next_cr_y*20'd256+next_cr_x*20'd13+next_write_cntr%13; 
     end else // next_state==SETUP||next_state==PHOTO_SET
@@ -301,8 +313,7 @@ always@* begin
     // ---------------------------------------------------------------------------------------------
 
     // im-write-enable logic
-    //if (state==PHOTO_SI || state==NEXT_PHOTO_SI) begin 
-    if (state==PHOTO_SI) begin 
+    if (state==PHOTO_SI || state==NEXT_PHOTO_SI) begin 
         //TODO:scale-support
         if (curr_photo_size==2'b11) begin // 512*512-size
             if (work_cntr>20'd6) begin 
