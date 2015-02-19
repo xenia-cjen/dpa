@@ -1,0 +1,28 @@
+ 
+****************************************
+Report : area
+Design : DPA
+Version: G-2012.06
+Date   : Thu Nov 12 23:02:24 2015
+****************************************
+
+Library(s) Used:
+
+    slow (File: /home/raid2_2/course/cvsd/CBDK_IC_Contest/CIC/SynopsysDC/db/slow.db)
+
+Number of ports:                           93
+Number of nets:                           696
+Number of cells:                          536
+Number of combinational cells:            413
+Number of sequential cells:               122
+Number of macros:                           0
+Number of buf/inv:                         90
+Number of references:                      59
+
+Combinational area:       29631.511890
+Noncombinational area:    7278.451031
+Net Interconnect area:    476562.391296
+
+Total cell area:          36909.962921
+Total area:               513472.354217
+1
