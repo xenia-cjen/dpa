@@ -5,7 +5,7 @@ COM = ncverilog
 COM_OPTS = -notimingcheck 
 SYN_COM_OPTS = 
 OPTION = +tb6+VCD
-SYN_OPTION = +tb5
+SYN_OPTION = +tb6
  	 	
 com : testfixture.v DPA.v
 	$(COM) $(COM_OPTS) $(SRC_FILE) +access+r +define$(OPTION)

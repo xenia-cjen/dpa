@@ -4,7 +4,7 @@
 // Filename      : CONT.v
 // Author        : r04099
 // Created On    : 2015-11-06 04:43
-// Last Modified : 2015-02-19 20:35
+// Last Modified : 2015-02-20 06:52
 // -------------------------------------------------------------------------------------------------
 // Svn Info:
 //   $Revision::                                                                                $:
@@ -256,14 +256,53 @@ always@* begin
                     end 
                 end  
             end else begin // NEXT_PHOTO_SI 
-                //TODO
-                read_addr = 20'd0; 
-                //if (write_addr[19:8]%2==0) begin // even-line 
-                //end else begin // odd-line 
-                //    if (write_addr[7:0]!=8'd255) begin 
-                //    end else begin // end-of-line  
-                //    end 
-                //end  
+                if (write_addr[19:8]%2==0) begin // even-line 
+                    if (read_cntr%4==0) begin 
+                        if (work_cntr>20'd6) begin 
+                            if ((work_cntr-20'd7)%6<3)
+                                read_addr={write_addr[19:9], write_addr[7:1]}; 
+                            else 
+                                read_addr={next_write_addr[19:9], next_write_addr[7:1]}; 
+                        end else begin // init 
+                            if (work_cntr<20'd4) 
+                                read_addr={write_addr[19:9], write_addr[7:1]}; 
+                            else 
+                                read_addr={next_write_addr[19:9], next_write_addr[7:1]}; 
+                        end 
+                    end else 
+                        read_addr={write_addr[19:9], write_addr[7:1]}; 
+                end else begin // odd-line 
+                    if (write_addr[19:8]==12'd255) begin // last-line  
+                        if (write_addr[7:0]!=8'd255) begin 
+                            case (read_cntr%4) 
+                            0: read_addr={next_write_addr[19:9], next_write_addr[7:1]}; 
+                            1: read_addr={write_addr[19:9], write_addr[7:1]}; 
+                            default: begin //2&3 
+                                read_addr={write_addr[19:9], write_addr[7:1]}+20'd1; 
+                            end 
+                            endcase
+                        end else begin // last grid 
+                            read_addr={write_addr[19:9], write_addr[7:1]}; 
+                        end 
+                    end else if (write_addr[7:0]==8'd255) begin // end-of-line 
+                        case (read_cntr%4) 
+                        0: read_addr={next_write_addr[19:9], next_write_addr[7:1]}; 
+                        1: read_addr={write_addr[19:9], write_addr[7:1]}; 
+                        default: begin //2&3 
+                            read_addr={write_addr[19:9], write_addr[7:1]}+20'd128; 
+                        end 
+                        endcase
+                    end else begin 
+                        case (read_cntr%4) 
+                        1: read_addr={write_addr[19:9], write_addr[7:1]}+20'd1; 
+                        2: read_addr={write_addr[19:9], write_addr[7:1]}+20'd129; 
+                        3: read_addr={write_addr[19:9], write_addr[7:1]}+20'd128; 
+                        default: begin //0 
+                            read_addr={next_write_addr[19:9], next_write_addr[7:1]}; 
+                        end 
+                        endcase
+                    end 
+                end  
             end 
         end else if (curr_photo_size==2'b11) begin // 512*512-size
             case (read_cntr%4) 
@@ -362,8 +401,17 @@ always@* begin
                         im_a = write_addr+fb_addr; 
                 end 
             end else begin // NEXT_PHOTO_SI 
-                //TODO
-                im_a = write_addr+fb_addr; 
+                if (work_cntr>20'd6) begin 
+                    if ((work_cntr-20'd7)%6<5) 
+                        im_a = read_addr+curr_photo_addr; 
+                    else 
+                        im_a = write_addr+fb_addr; 
+                end else begin 
+                    if (work_cntr<20'd6) 
+                        im_a = read_addr+curr_photo_addr; 
+                    else 
+                        im_a = write_addr+fb_addr; 
+                end 
             end 
         end else if (curr_photo_size==2'b11) begin // 512*512-size
             if (work_cntr>20'd6) begin 
@@ -408,8 +456,17 @@ always@* begin
                         im_wen_n = (write_cntr>=max_write_cntr); 
                 end 
             end else begin // NEXT_PHOTO_SI 
-                //TODO
-                im_wen_n = 1'b1; 
+                if (work_cntr>20'd6) begin 
+                    if ((work_cntr-20'd7)%6<5) 
+                        im_wen_n = 1'b1; 
+                    else 
+                        im_wen_n = (write_cntr>=max_write_cntr); 
+                end else begin 
+                    if (work_cntr<20'd6) 
+                        im_wen_n = 1'b1; 
+                    else 
+                        im_wen_n = (write_cntr>=max_write_cntr); 
+                end 
             end 
         end else if (curr_photo_size==2'b11) begin // 512*512-size
             if (work_cntr>20'd6) begin 
@@ -471,9 +528,11 @@ always@* begin
                             next_en_si = 1'b0; 
                     end 
                 end else begin // NEXT_PHOTO_SI 
-                    //TODO
-                    next_en_si = 1'b0; 
-                end 
+                    if (work_cntr>20'd5)  
+                        next_en_si  = (((work_cntr-20'd6)%6<5)&&((work_cntr-20'd6)%6>0)); 
+                    else 
+                        next_en_si  = (work_cntr<20'd5); 
+                    end 
             end else if (curr_photo_size==2'b11) begin // 512*512-size
                 if (work_cntr>20'd5)  
                     next_en_si  = (((work_cntr-20'd6)%6<5)&&((work_cntr-20'd6)%6>0)); 
@@ -511,8 +570,21 @@ always@* begin
                         so_mux_sel = 2'b00; // BYPASS
                 end 
             end else begin // NEXT_PHOTO_SI 
-                //TODO
-                so_mux_sel = 2'b00; // BYPASS
+                if (work_cntr>20'd6) begin 
+                    if (((work_cntr-20'd7)%6<4)&&((work_cntr-20'd7)%6>1)) 
+                        so_mux_sel = 2'b01; // ADD 
+                    else if ((work_cntr-20'd7)%6==4) 
+                        so_mux_sel = 2'b11; // SHIFT
+                    else 
+                        so_mux_sel = 2'b00; // BYPASS
+                end else begin 
+                    if ((work_cntr<20'd5)&&(work_cntr>20'd2)) 
+                        so_mux_sel = 2'b01; // ADD 
+                    else if (work_cntr==20'd5)
+                        so_mux_sel = 2'b11; // SHIFT
+                    else 
+                        so_mux_sel = 2'b00; // BYPASS
+                end 
             end 
         end else if (curr_photo_size==2'b11) begin // 512*512-size
             if (work_cntr>20'd6) begin 
