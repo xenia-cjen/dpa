@@ -4,9 +4,8 @@ TECH_FILE = tsmc13.v
 COM = ncverilog
 COM_OPTS = -notimingcheck 
 SYN_COM_OPTS = 
-OPTION = +tb2+VCD
-SYN_OPTION = +tb1
-
+OPTION = +tb6+VCD
+SYN_OPTION = +tb5
  	 	
 com : testfixture.v DPA.v
 	$(COM) $(COM_OPTS) $(SRC_FILE) +access+r +define$(OPTION)
@@ -19,4 +18,4 @@ clean :
 	@rm -rf INCA_libs nWaveLog VerdiLog vfastLog 
 
 synclean : 
-	@rm -rf *-verilog.syn *.mr *.pvl default.svf command.log 
+	@rm -rf *-verilog.syn *.mr *.pvl *.log default.svf command.log 
