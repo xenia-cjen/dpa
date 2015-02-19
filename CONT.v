@@ -4,7 +4,7 @@
 // Filename      : CONT.v
 // Author        : r04099
 // Created On    : 2015-11-06 04:43
-// Last Modified : 2015-02-19 19:35
+// Last Modified : 2015-02-19 20:35
 // -------------------------------------------------------------------------------------------------
 // Svn Info:
 //   $Revision::                                                                                $:
@@ -226,19 +226,33 @@ always@* begin
                             read_addr={write_addr[19:9], write_addr[7:1]}; 
                     end 
                 end else begin // odd-line  
-                    if ((work_cntr%MAX_CNTR_PER_ROW)>20'd4) begin 
-                        if(read_cntr%2==0) 
-                            read_addr={next_write_addr[19:9], next_write_addr[7:1]}; 
-                        else 
-                            read_addr={write_addr[19:9], write_addr[7:1]}+20'd128; 
-                    end else begin // init 
-                        if ((work_cntr%MAX_CNTR_PER_ROW)<20'd2) begin  
+                    if (write_addr[19:8]!=12'd255) begin 
+                        if ((work_cntr%MAX_CNTR_PER_ROW)>20'd4) begin 
                             if(read_cntr%2==0) 
-                                read_addr={write_addr[19:9], write_addr[7:1]}; 
+                                read_addr={next_write_addr[19:9], next_write_addr[7:1]}; 
                             else 
                                 read_addr={write_addr[19:9], write_addr[7:1]}+20'd128; 
-                        end else  
-                            read_addr={next_write_addr[19:9], next_write_addr[7:1]}; 
+                        end else begin // init 
+                            if ((work_cntr%MAX_CNTR_PER_ROW)<20'd2) begin  
+                                if(read_cntr%2==0) 
+                                    read_addr={write_addr[19:9], write_addr[7:1]}; 
+                                else 
+                                    read_addr={write_addr[19:9], write_addr[7:1]}+20'd128; 
+                            end else  
+                                read_addr={next_write_addr[19:9], next_write_addr[7:1]}; 
+                        end 
+                    end else begin //last-line 
+                        if ((work_cntr%MAX_CNTR_PER_ROW)>20'd4) begin 
+                            if(read_cntr%2==0) 
+                                read_addr={next_write_addr[19:9], next_write_addr[7:1]}; 
+                            else 
+                                read_addr={write_addr[19:9], write_addr[7:1]}; 
+                        end else begin // init 
+                            if ((work_cntr%MAX_CNTR_PER_ROW)<20'd2) begin  
+                                read_addr={write_addr[19:9], write_addr[7:1]}; 
+                            end else  
+                                read_addr={next_write_addr[19:9], next_write_addr[7:1]}; 
+                        end 
                     end 
                 end  
             end else begin // NEXT_PHOTO_SI 

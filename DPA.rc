@@ -18,14 +18,14 @@ signalSpacing 3
 windowTimeUnit 1ns
 
 ; waveform viewport range
-zoom 0.000000 1400003000.000000 1n
-cursor 395916000.000000
+zoom 2000007015.776765 2000016858.009115 1n
+cursor 2000013000.000000
 marker 0.000000
 
 ; user define markers
 ; userMarker time_pos marker_name color linestyle
 ; visible top row signal index
-top 1
+top 2
 ; marker line index
 markerPos 22
 
@@ -60,8 +60,8 @@ addSignal -h 15 -UNSIGNED -HEX -holdScope next_state[2:0]
 addSignal -h 15 /BLANK
 addSignal -h 15 -UNSIGNED -UDEC /test/DPA/ctrl_logic/im_a[19:0]
 addSignal -h 15 -holdScope im_wen_n
-addSignal -h 15 -UNSIGNED -BIN /test/DPA/data_path/si_mux[23:0]
-addSignal -h 15 -UNSIGNED -BIN -holdScope si_w[23:0]
+addSignal -h 15 -UNSIGNED -HEX /test/DPA/data_path/si_mux[23:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope si_w[23:0]
 addSignal -h 15 /BLANK
 addSignal -h 15 -UNSIGNED -UDEC /test/DPA/ctrl_logic/cr_a[8:0]
 addSignal -h 15 -UNSIGNED -HEX -holdScope cr_x[8:0]
