@@ -18,16 +18,16 @@ signalSpacing 3
 windowTimeUnit 1ns
 
 ; waveform viewport range
-zoom 2000007015.776765 2000016858.009115 1n
+zoom 0.000000 3000002000.000000 1n
 cursor 2000013000.000000
 marker 0.000000
 
 ; user define markers
 ; userMarker time_pos marker_name color linestyle
 ; visible top row signal index
-top 2
+top 0
 ; marker line index
-markerPos 22
+markerPos 38
 
 ; event list
 ; addEvent event_name event_expression
@@ -85,6 +85,8 @@ addSignal -h 15 -UNSIGNED -HEX -holdScope write_addr[19:0]
 addSignal -h 15 /BLANK
 addSignal -h 15 -UNSIGNED -HEX /test/DPA/ctrl_logic/curr_time[23:0]
 addSignal -h 15 -UNSIGNED -UDEC -holdScope fb_addr[19:0]
+addSignal -h 15 /BLANK
+addSignal -h 15 -UNSIGNED -HEX /test/DPA/ctrl_logic/curr_photo[1:0]
 addSignal -h 15 -UNSIGNED -HEX -holdScope photo_num[1:0]
 addSignal -h 15 /BLANK
 addSignal -h 15 -UNSIGNED -HEX /test/DPA/ctrl_logic/curr_photo_addr[19:0]
