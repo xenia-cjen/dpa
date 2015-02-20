@@ -4,7 +4,7 @@
 // Filename      : CONT.v
 // Author        : r04099
 // Created On    : 2015-11-06 04:43
-// Last Modified : 2015-02-20 06:52
+// Last Modified : 2015-02-20 19:48
 // -------------------------------------------------------------------------------------------------
 // Svn Info:
 //   $Revision::                                                                                $:
@@ -205,13 +205,13 @@ always@* begin
             if (state==PHOTO_SI) begin 
                 if (write_addr[19:8]%2==0) begin // even-line 
                     if (write_addr[7:0]!=8'd255) begin 
-                        if ((work_cntr%MAX_CNTR_PER_ROW)>20'd4) begin 
+                        if (work_cntr>20'd4) begin 
                             if(read_cntr%2==0) 
                                 read_addr={next_write_addr[19:9], next_write_addr[7:1]}; 
                             else 
                                 read_addr={write_addr[19:9], write_addr[7:1]}+20'd1; 
                         end else begin // init 
-                            if ((work_cntr%MAX_CNTR_PER_ROW)<20'd2) begin  
+                            if (work_cntr<20'd2) begin  
                                 if(read_cntr%2==0) 
                                     read_addr={write_addr[19:9], write_addr[7:1]}; 
                                 else 
@@ -227,32 +227,15 @@ always@* begin
                     end 
                 end else begin // odd-line  
                     if (write_addr[19:8]!=12'd255) begin 
-                        if ((work_cntr%MAX_CNTR_PER_ROW)>20'd4) begin 
-                            if(read_cntr%2==0) 
-                                read_addr={next_write_addr[19:9], next_write_addr[7:1]}; 
-                            else 
-                                read_addr={write_addr[19:9], write_addr[7:1]}+20'd128; 
-                        end else begin // init 
-                            if ((work_cntr%MAX_CNTR_PER_ROW)<20'd2) begin  
-                                if(read_cntr%2==0) 
-                                    read_addr={write_addr[19:9], write_addr[7:1]}; 
-                                else 
-                                    read_addr={write_addr[19:9], write_addr[7:1]}+20'd128; 
-                            end else  
-                                read_addr={next_write_addr[19:9], next_write_addr[7:1]}; 
-                        end 
+                        if(read_cntr%2==0) 
+                            read_addr={next_write_addr[19:9], next_write_addr[7:1]}; 
+                        else 
+                            read_addr={write_addr[19:9], write_addr[7:1]}+20'd128; 
                     end else begin //last-line 
-                        if ((work_cntr%MAX_CNTR_PER_ROW)>20'd4) begin 
-                            if(read_cntr%2==0) 
-                                read_addr={next_write_addr[19:9], next_write_addr[7:1]}; 
-                            else 
-                                read_addr={write_addr[19:9], write_addr[7:1]}; 
-                        end else begin // init 
-                            if ((work_cntr%MAX_CNTR_PER_ROW)<20'd2) begin  
-                                read_addr={write_addr[19:9], write_addr[7:1]}; 
-                            end else  
-                                read_addr={next_write_addr[19:9], next_write_addr[7:1]}; 
-                        end 
+                        if(read_cntr%2==0) 
+                            read_addr={next_write_addr[19:9], next_write_addr[7:1]}; 
+                        else 
+                            read_addr={write_addr[19:9], write_addr[7:1]}; 
                     end 
                 end  
             end else begin // NEXT_PHOTO_SI 
@@ -389,13 +372,13 @@ always@* begin
         //TODO:scale-support
         if (curr_photo_size==2'b01) begin 
             if (state==PHOTO_SI) begin 
-                if ((work_cntr%MAX_CNTR_PER_ROW)>20'd4) begin 
-                    if (((work_cntr%MAX_CNTR_PER_ROW)-20'd5)%4<3)
+                if (work_cntr>20'd4) begin 
+                    if ((work_cntr-20'd5)%4<3)
                         im_a = read_addr+curr_photo_addr; 
                     else  
                         im_a = write_addr+fb_addr; 
                 end else begin // init 
-                    if ((work_cntr%MAX_CNTR_PER_ROW)<20'd4)
+                    if (work_cntr<20'd4)
                         im_a = read_addr+curr_photo_addr; 
                     else  
                         im_a = write_addr+fb_addr; 
@@ -444,13 +427,13 @@ always@* begin
         //TODO:scale-support
         if (curr_photo_size==2'b01) begin 
             if (state==PHOTO_SI) begin 
-                if ((work_cntr%MAX_CNTR_PER_ROW)>20'd4) begin 
-                    if (((work_cntr%MAX_CNTR_PER_ROW)-20'd5)%4<3)
+                if (work_cntr>20'd4) begin 
+                    if ((work_cntr-20'd5)%4<3)
                         im_wen_n = 1'b1; 
                     else  
                         im_wen_n = (write_cntr>=max_write_cntr); 
                 end else begin // init 
-                    if ((work_cntr%MAX_CNTR_PER_ROW)<20'd4)
+                    if (work_cntr<20'd4)
                         im_wen_n = 1'b1; 
                     else  
                         im_wen_n = (write_cntr>=max_write_cntr); 
@@ -510,22 +493,14 @@ always@* begin
         if (next_state==state) begin 
             if (curr_photo_size==2'b01) begin 
                 if (state==PHOTO_SI) begin 
-                    if (write_addr[7:0]!=8'd255) begin 
-                        if ((next_work_cntr%MAX_CNTR_PER_ROW)>20'd4) begin 
-                            if ((((next_work_cntr%MAX_CNTR_PER_ROW)-20'd5)%4<3) && 
-                              (((next_work_cntr%MAX_CNTR_PER_ROW)-20'd5)%4>0)) 
-                                next_en_si = 1'b1; 
-                            else  
-                                next_en_si = 1'b0; 
-                        end else begin // init 
-                            next_en_si = ((next_work_cntr%MAX_CNTR_PER_ROW)<4);  
-                        end 
-                    end else begin //end-of-line 
-                        if ((((next_work_cntr%MAX_CNTR_PER_ROW)-20'd5)%4<2) && 
-                          (((next_work_cntr%MAX_CNTR_PER_ROW)-20'd5)%4>0)) 
+                    if (next_work_cntr>20'd4) begin 
+                        if (((next_work_cntr-20'd5)%4<3) && 
+                          ((next_work_cntr-20'd5)%4>0)) 
                             next_en_si = 1'b1; 
                         else  
                             next_en_si = 1'b0; 
+                    end else begin // init 
+                        next_en_si = (next_work_cntr<20'd4);  
                     end 
                 end else begin // NEXT_PHOTO_SI 
                     if (work_cntr>20'd5)  
@@ -558,13 +533,13 @@ always@* begin
     if (state==PHOTO_SI || state==NEXT_PHOTO_SI) begin 
         if (curr_photo_size==2'b01) begin 
             if (state==PHOTO_SI) begin 
-                if ((work_cntr%MAX_CNTR_PER_ROW)>20'd4) begin 
-                    if (((work_cntr%MAX_CNTR_PER_ROW)-20'd5)%4==20'd2)
+                if (work_cntr>20'd4) begin 
+                    if ((work_cntr-20'd5)%4==20'd2)
                         so_mux_sel = 2'b11; // SHIFT
                     else  
                         so_mux_sel = 2'b00; // BYPASS
                 end else begin // init 
-                    if ((work_cntr%MAX_CNTR_PER_ROW)==20'd3)
+                    if (work_cntr==20'd3)
                         so_mux_sel = 2'b11; // SHIFT
                     else  
                         so_mux_sel = 2'b00; // BYPASS
